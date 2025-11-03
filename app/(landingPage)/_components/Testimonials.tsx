@@ -27,7 +27,7 @@ export function Testimonials() {
   return (
     <section className="space-y-10">
       <div className="flex flex-col gap-4 text-center">
-        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">
+        <span className="text-lg font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">
           Voices from users
         </span>
         <h2 className="text-3xl font-semibold text-[#111827] sm:text-4xl">

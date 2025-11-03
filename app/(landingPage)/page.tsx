@@ -13,7 +13,7 @@ export default function Home() {
         className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.12),transparent_55%)]"
         aria-hidden
       />
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-16 px-4 pt-6 ">
+      <div className="mx-auto flex min-h-screen max-w-6xl px-4">
         <div className="flex flex-1 flex-col gap-20">
           <Hero />
           <Features />

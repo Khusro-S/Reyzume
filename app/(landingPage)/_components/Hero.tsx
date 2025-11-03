@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import Link from "next/link";
+import ResumeBuilderHero from "./ResumeBuilderHero";
 // import FinderWindow from "./FinderWindow";
-import ResumeBuilderHero from "./FinderWindow";
 
 export function Hero() {
   return (

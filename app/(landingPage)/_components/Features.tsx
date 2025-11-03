@@ -33,9 +33,9 @@ const features = [
 
 export function Features() {
   return (
-    <section id="about" className="space-y-12">
+    <section id="about" className="space-y-14">
       <div className="flex flex-col gap-4 text-center">
-        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">
+        <span className="text-lg font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">
           Why Reyzume
         </span>
         <h2 className="text-3xl font-semibold text-[#111827] sm:text-4xl">
@@ -46,7 +46,7 @@ export function Features() {
           when submitted.
         </p>
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-12 md:gap-10 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {features.map((feature, index) => {
           const Icon = feature.icon;
           return (
@@ -58,8 +58,8 @@ export function Features() {
               viewport={{ once: true, amount: 0.4 }}
             >
               <Card className="h-full">
-                <CardHeader className="gap-4 text-center flex flex-col items-center justify-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3B82F6]/10 text-[#2563eb]">
+                <CardHeader className="relative gap-4 text-center flex flex-col items-center justify-center">
+                  <div className="absolute -top-13 left-1/2 -translate-x-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white">
                     <Icon className="h-6 w-6" />
                   </div>
                   <CardTitle className="text-xl font-semibold text-[#111827]">

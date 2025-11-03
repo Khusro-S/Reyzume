@@ -22,16 +22,16 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="space-y-10">
+    <section className="space-y-14">
       <div className="flex flex-col gap-4 text-center">
-        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">
+        <span className="text-lg font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">
           How it works
         </span>
         <h2 className="text-3xl font-semibold text-[#111827] sm:text-4xl">
           Build a standout resume in three intuitive steps
         </h2>
       </div>
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-10 md:gap-6 md:grid-cols-3">
         {steps.map((step, index) => (
           <motion.div
             key={step.title}
@@ -41,8 +41,8 @@ export function HowItWorks() {
             viewport={{ once: true, amount: 0.5 }}
             className="relative rounded-3xl border border-[#3B82F6]/15 bg-white p-8 text-left shadow-sm flex items-center justify-center flex-col "
           >
-            <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3B82F6]/10 text-lg font-semibold text-[#2563eb]">
+            <div className="relative flex items-center gap-4">
+              <span className="absolute -top-14 left-1/2 -translate-x-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
                 0{index + 1}
               </span>
               <h3 className="text-xl font-semibold text-[#111827]">
@@ -52,7 +52,7 @@ export function HowItWorks() {
             <p className="mt-4 text-base text-[#4B5563]">{step.description}</p>
             {index < steps.length - 1 && (
               // <ArrowRight className="absolute -right-6 top-1/2 hidden h-10 w-10 -translate-y-1/2 text-[#FACC15]/80 md:block" />
-              <ArrowRight className="absolute -bottom-10 -translate-x-1/2 md:-right-6 md:top-1/2 h-10 w-10 md:translate-x-0 md:-translate-y-1/2 text-[#FACC15]/80 rotate-90 md:rotate-0 z-1" />
+              <ArrowRight className="absolute -bottom-5 left-1/2 -translate-x-1/2 rotate-90 h-10 w-10 text-[#FACC15]/80 md:rotate-0 md:-right-8 md:top-1/2 md:left-auto md:bottom-auto md:-translate-y-1/2 md:translate-x-0" />
             )}
           </motion.div>
         ))}
