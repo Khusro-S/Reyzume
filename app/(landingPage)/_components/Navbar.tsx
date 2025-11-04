@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 export function Navbar() {
@@ -33,9 +34,11 @@ export function Navbar() {
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button> */}
-        <Button asChild className="bg-[#3B82F6] text-white rounded-full">
+
+        <UserButton />
+        {/* <Button asChild className="bg-[#3B82F6] text-white rounded-full">
           <Link href="#cta">Create My Resume</Link>
-        </Button>
+        </Button> */}
       </nav>
 
       {/* {isOpen && (

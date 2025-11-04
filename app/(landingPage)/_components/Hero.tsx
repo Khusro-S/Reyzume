@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import Link from "next/link";
 import ResumeBuilderHero from "./ResumeBuilderHero";
+// import { SignInButton } from "@clerk/nextjs";
 // import FinderWindow from "./FinderWindow";
 
 export function Hero() {
@@ -40,8 +41,11 @@ export function Hero() {
           </p>
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button size="lg">
-              <Link href="#cta">Start Building</Link>
+              <Link href="/signin">Start Building</Link>
             </Button>
+            {/* <SignInButton mode="modal" fallbackRedirectUrl="/reyzumes">
+              <Button>Start Building</Button>
+            </SignInButton> */}
             {/* <Button size="lg" variant="secondary">
               <Link href="#templates">See Templates</Link>
             </Button> */}
@@ -49,7 +53,7 @@ export function Hero() {
         </motion.div>
         {/* <FinderWindow /> */}
         <ResumeBuilderHero />
-        {/* Animated background orbs - Made smaller */}
+        {/* Animated background orbs */}
         <motion.div
           className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-2xl -z-10"
           animate={{
