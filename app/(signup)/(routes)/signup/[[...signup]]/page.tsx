@@ -52,7 +52,7 @@ export default function SignupPage() {
           }}
         />
         <div className="z-10">
-          <SignUp />
+          <SignUp fallbackRedirectUrl="/reyzumes" />
         </div>
       </div>
     </div>

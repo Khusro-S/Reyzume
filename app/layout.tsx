@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import ConvexClientProvider from "@/components/providers/convexClientProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,11 +44,15 @@ export default function RootLayout({
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     >
-      <html lang="en">
-        <body className={`${inter.variable} ${workSans.variable} antialiased`}>
-          {children}
-        </body>
-      </html>
+      <ConvexClientProvider>
+        <html lang="en">
+          <body
+            className={`${inter.variable} ${workSans.variable} antialiased`}
+          >
+            {children}
+          </body>
+        </html>
+      </ConvexClientProvider>
     </ClerkProvider>
   );
 }

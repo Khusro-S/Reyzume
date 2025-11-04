@@ -65,7 +65,7 @@ export default function SignInPage() {
           }}
         />
         <div className="z-10">
-          <SignIn />
+          <SignIn fallbackRedirectUrl="/reyzumes" />
         </div>
         {/* <SignIn
           appearance={{

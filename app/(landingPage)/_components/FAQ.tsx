@@ -53,11 +53,7 @@ export function FAQ() {
         defaultValue="item-0"
       >
         {faqs.map((faq, index) => (
-          <AccordionItem
-            key={faq.question}
-            value={`item-${index}`}
-            className=""
-          >
+          <AccordionItem key={faq.question} value={`item-${index}`}>
             <AccordionTrigger className="cursor-pointer">
               {faq.question}
             </AccordionTrigger>
