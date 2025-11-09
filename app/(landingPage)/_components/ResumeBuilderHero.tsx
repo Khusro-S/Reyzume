@@ -11,38 +11,45 @@ import {
   AlignRight,
 } from "lucide-react";
 
+const ROLES = [
+  "Software Engineer",
+  "Frontend Developer",
+  "Graphic Designer",
+  "Product Manager",
+  "UX Designer",
+  "Data Scientist",
+];
+
 const TypingAnimation = () => {
   const [currentRole, setCurrentRole] = useState("");
   const [roleIndex, setRoleIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [typingSpeed, setTypingSpeed] = useState(150);
+  const [showCursor, setShowCursor] = useState(true);
 
+  // typing effect
   useEffect(() => {
-    const roles = [
-      "Software Engineer",
-      "Frontend Developer",
-      "Graphic Designer",
-      "Product Manager",
-      "UX Designer",
-      "Data Scientist",
-    ];
-    const role = roles[roleIndex];
+    const role = ROLES[roleIndex];
 
     const timer = setTimeout(() => {
+      // typing mode
       if (!isDeleting) {
         if (currentRole.length < role.length) {
           setCurrentRole(role.substring(0, currentRole.length + 1));
-          setTypingSpeed(150);
+          setTypingSpeed(100);
+          setShowCursor(true);
         } else {
-          setTimeout(() => setIsDeleting(true), 2000);
+          setTimeout(() => setIsDeleting(true), 2000); // stop for few seconds after finishing typing
         }
+        // deleting mode
       } else {
         if (currentRole.length > 0) {
           setCurrentRole(currentRole.substring(0, currentRole.length - 1));
-          setTypingSpeed(100);
+          setTypingSpeed(50);
+          setShowCursor(true);
         } else {
           setIsDeleting(false);
-          setRoleIndex((roleIndex + 1) % roles.length);
+          setRoleIndex((roleIndex + 1) % ROLES.length);
         }
       }
     }, typingSpeed);
@@ -50,10 +57,28 @@ const TypingAnimation = () => {
     return () => clearTimeout(timer);
   }, [currentRole, isDeleting, roleIndex, typingSpeed]);
 
+  // Blinking effect
+  useEffect(() => {
+    const role = ROLES[roleIndex];
+    const isFinishedTyping = currentRole.length === role.length && !isDeleting;
+
+    if (isFinishedTyping) {
+      const blinkInterval = setInterval(() => {
+        setShowCursor((prev) => !prev);
+      }, 530);
+
+      return () => clearInterval(blinkInterval);
+    }
+  }, [currentRole, isDeleting, roleIndex]);
+
   return (
     <span className="inline-flex items-center text-sm">
       {currentRole}
-      <span className="ml-0.5 w-0.5 h-3 bg-blue-600 animate-pulse" />
+      <span
+        className={`ml-0.5 w-0.5 h-4 bg-primary transition-opacity duration-100 ${
+          showCursor ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </span>
   );
 };

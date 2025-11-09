@@ -7,7 +7,7 @@ const testimonials = [
     name: "Maya Chen",
     role: "Product Designer",
     quote:
-      "Reyzume shaved hours off my application process. The AI suggestions sounded exactly like me—just more polished.",
+      "Reyzume shaved hours off my application process. The AI suggestions sounded exactly like me, just more polished.",
   },
   {
     name: "Jordan Alvarez",

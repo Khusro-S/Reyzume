@@ -3,6 +3,7 @@ import { Inter, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "@/components/providers/convexClientProvider";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -17,7 +18,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Reyzume — Build ATS-Friendly Resumes Effortlessly",
+  title: "Reyzume | Build ATS-Friendly Resumes Effortlessly",
   description:
     "Create professional, ATS-optimized resumes with Reyzume. Fast, beautiful, and AI-assisted.",
   openGraph: {
@@ -41,18 +42,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-    >
-      <ConvexClientProvider>
-        <html lang="en">
-          <body
-            className={`${inter.variable} ${workSans.variable} antialiased`}
-          >
+    <html lang="en" className="p-0 m-0">
+      <body
+        className={`${inter.variable} ${workSans.variable} antialiased bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.12),transparent_55%)]`}
+      >
+        <ClerkProvider
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        >
+          <ConvexClientProvider>
+            <Toaster position="top-right" closeButton visibleToasts={5} />
             {children}
-          </body>
-        </html>
-      </ConvexClientProvider>
-    </ClerkProvider>
+          </ConvexClientProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

@@ -9,11 +9,8 @@ import { Testimonials } from "@/app/(landingPage)/_components/Testimonials";
 export default function Home() {
   return (
     <>
-      <div
-        className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.12),transparent_55%)]"
-        aria-hidden
-      />
-      <div className="mx-auto flex min-h-screen max-w-6xl px-4">
+      <div className="absolute inset-0 -z-10" aria-hidden />
+      <div className="mx-auto min-h-screen max-w-6xl px-4">
         <div className="flex flex-1 flex-col gap-20">
           <Hero />
           <Features />

@@ -150,6 +150,19 @@ h6 {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground w-full;
   }
 }
+
+/* Reduce toast width */
+[data-sonner-toast] {
+  width: auto !important;
+  min-width: fit-content !important;
+  max-width: 400px !important;
+  /* padding: 12px 16px !important; */
+}
+
+/* Reduce gap between icon and text */
+/* [data-sonner-toast] [data-icon] {
+  margin-right: 8px !important;
+} */
