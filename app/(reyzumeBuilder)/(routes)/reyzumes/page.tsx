@@ -94,6 +94,17 @@ export default function ReyzumesPage() {
     e.stopPropagation();
     toast.info("Delete feature coming soon!");
   };
+
+  // Add loading state
+  if (reyzumes === undefined) {
+    return <div>Loading...</div>;
+  }
+
+  // reyzumes will be [] if not authenticated, show auth prompt
+  if (reyzumes === null) {
+    return <div>Please sign in to view your resumes</div>;
+  }
+
   return (
     <div className="flex flex-col gap-5 justify-center items-center">
       <Navbar />

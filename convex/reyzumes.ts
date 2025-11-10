@@ -78,7 +78,8 @@ export const getReyzumes = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized or not logged in");
+      // throw new Error("Unauthorized or not logged in");
+      return [];
     }
 
     const userId = identity.subject;
@@ -86,6 +87,7 @@ export const getReyzumes = query({
     const reyzumes = await ctx.db
       .query("reyzumes")
       .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter((q) => q.eq(q.field("isArchived"), false))
       .order("desc")
       .collect();
 

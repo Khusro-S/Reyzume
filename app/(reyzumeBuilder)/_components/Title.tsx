@@ -8,12 +8,21 @@ import { useTitle } from "@/hooks/use-editable-title";
 import { useMutation } from "convex/react";
 import { useEffect, useRef, useState } from "react";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 interface TitleProps {
   initialData: Doc<"reyzumes">;
 }
 
 export default function Title({ initialData }: TitleProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const textRef = useRef<HTMLHeadingElement>(null);
+  const [isTruncated, setIsTruncated] = useState(false);
 
   // const [isEditing, setIsEditing] = useState(false);
 
@@ -33,6 +42,14 @@ export default function Title({ initialData }: TitleProps) {
     editingTitleId === initialData._id
       ? editingTitleValue
       : initialData.title || "Untitled";
+
+  // Check if text is truncated
+  useEffect(() => {
+    if (textRef.current && !isEditing) {
+      const isTrunc = textRef.current.scrollWidth > textRef.current.clientWidth;
+      setIsTruncated(isTrunc);
+    }
+  }, [displayTitle, isEditing]);
 
   // Auto-focus when editing starts
   useEffect(() => {
@@ -57,7 +74,7 @@ export default function Title({ initialData }: TitleProps) {
           title: editingTitleValue || "Untitled",
         });
       }
-    }, 300);
+    }, 100);
 
     // Cleanup: cancel the timer if user types again
     return () => {
@@ -122,14 +139,28 @@ export default function Title({ initialData }: TitleProps) {
           className="h-7 px-2 focus-visible:ring-transparent w-full"
         />
       ) : (
-        <h3
-          //   onClick={!initialData.isArchived ? enableInput : undefined}
-          //   variant="ghost"
-          //   size="sm"
-          className="font-medium text-foreground truncate  w-full"
-        >
-          {displayTitle}
-        </h3>
+        <TooltipProvider>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger asChild>
+              <h3
+                ref={textRef}
+                className="font-medium text-foreground truncate w-full"
+                // title=""
+              >
+                {displayTitle}
+                {/* to prevent safari/browser default tooltip */}
+                <div></div>
+              </h3>
+            </TooltipTrigger>
+            {isTruncated && (
+              <TooltipContent>
+                <p className="max-w-[300px] w-full wrap-break-word">
+                  {displayTitle}
+                </p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       )}
     </div>
   );
