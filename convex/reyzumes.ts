@@ -92,3 +92,34 @@ export const getReyzumes = query({
     return reyzumes;
   },
 });
+
+export const updateReyzume = mutation({
+  args: {
+    id: v.id("reyzumes"),
+    title: v.optional(v.string()),
+    content: v.optional(v.string()),
+    isArchived: v.optional(v.boolean()),
+    isPublished: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized or not logged in");
+    }
+
+    const userId = identity.subject;
+    const { id, ...updates } = args;
+
+    const existingReyzume = await ctx.db.get(id);
+    if (!existingReyzume) {
+      throw new Error("Reyzume not found");
+    }
+
+    if (existingReyzume.userId !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const reyzume = await ctx.db.patch(id, { ...updates });
+    return reyzume;
+  },
+});

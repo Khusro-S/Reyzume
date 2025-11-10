@@ -1,21 +1,44 @@
 "use client";
+import { Footer } from "@/app/(landingPage)/_components/Footer";
+import { Navbar } from "@/app/(landingPage)/_components/Navbar";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
-import { FileText, PlusCircle } from "lucide-react";
+import {
+  Copy,
+  Download,
+  FileText,
+  MoreVertical,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import Title from "../../_components/Title";
+import { useTitle } from "@/hooks/use-editable-title";
+import { Doc } from "@/convex/_generated/dataModel";
 
 export default function ReyzumesPage() {
   const createReyzume = useMutation(api.reyzumes.createReyzume);
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
+
+  const { setEditing } = useTitle();
 
   const reyzumes = useQuery(api.reyzumes.getReyzumes);
 
@@ -48,24 +71,51 @@ export default function ReyzumesPage() {
     router.push(`/reyzumes/${reyzumeId}`);
   };
 
+  const handleRename = (reyzume: Doc<"reyzumes">, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // Delay setEditing until dropdown is fully closed
+    setTimeout(() => {
+      setEditing(reyzume._id, reyzume.title || "Untitled");
+    }, 100);
+  };
+
+  const handleDuplicate = (reyzumeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toast.info("Duplicate feature coming soon!");
+  };
+
+  const handleDownload = (reyzumeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toast.info("Download feature coming soon!");
+  };
+
+  const handleDelete = (reyzumeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toast.info("Delete feature coming soon!");
+  };
   return (
-    <>
-      <div className="mx-auto min-h-screen max-w-6xl px-4">
+    <div className="flex flex-col gap-5 justify-center items-center">
+      <Navbar />
+      <div className="min-h-screen max-w-6xl px-4 w-full">
         <div className="flex flex-1 flex-col gap-10 bg-background rounded-3xl shadow-lg px-6 py-10 sm:px-8 lg:px-16">
           <div className="w-full flex justify-between">
             <h1 className="text-2xl ">Reyzumes</h1>
             <Tooltip>
               <TooltipTrigger asChild>
-                <PlusCircle
-                  role="button"
+                <Button
                   onClick={handleCreate}
-                  className={cn(
-                    "h-8 w-8 text-background cursor-pointer active:scale-90 transition-transform ease-linear",
-                    isCreating && "opacity-50 cursor-not-allowed"
-                  )}
-                  fill="#3b82f6"
-                  aria-disabled={isCreating}
-                />
+                  className="h-8 w-8 hover:cursor-pointer active:scale-90 transition-transform ease-linear rounded-full"
+                >
+                  <Plus
+                    className={cn(
+                      "h-8 w-8 text-background ",
+                      isCreating && "opacity-50 cursor-not-allowed"
+                    )}
+                    // fill="#3b82f6"
+                    aria-disabled={isCreating}
+                  />
+                </Button>
               </TooltipTrigger>
               <TooltipContent className="">
                 {" "}
@@ -92,7 +142,7 @@ export default function ReyzumesPage() {
                   <div
                     key={reyzume._id}
                     onClick={() => handleResumeClick(reyzume._id)}
-                    className="group relative bg-white border border-gray-200 rounded-lg px-4 py-5 hover:shadow-lg hover:border-primary/50 transition-all ease-initial duration-200 cursor-pointer flex flex-col justify-center items-center gap-5 w-50"
+                    className="group relative bg-white border border-gray-200 rounded-lg px-4 py-5 hover:shadow-lg hover:border-primary/50 transition-all ease-initial duration-200 cursor-pointer flex flex-col justify-center items-center gap-5 w-full"
                   >
                     {/* Resume Icon */}
                     <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -100,9 +150,10 @@ export default function ReyzumesPage() {
                     </div>
 
                     {/* Resume Title */}
-                    <h3 className="font-medium text-foreground truncate">
-                      {reyzume.title}
-                    </h3>
+                    {/* <div className="w-full font-medium text-foreground truncate"> */}
+                    {/* {reyzume.title} */}
+                    <Title initialData={reyzume} />
+                    {/* </div> */}
 
                     {/* Metadata */}
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -128,6 +179,50 @@ export default function ReyzumesPage() {
                       )}
                     </div>
 
+                    {/* More Actions Menu */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem
+                          onClick={(e) => handleRename(reyzume, e)}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={(e) => handleDuplicate(reyzume._id, e)}
+                        >
+                          <Copy className="mr-2 h-4 w-4" />
+                          Duplicate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={(e) => handleDownload(reyzume._id, e)}
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Download
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={(e) => handleDelete(reyzume._id, e)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
                     {/* Hover Effect */}
                     <div className="absolute inset-0 rounded-lg bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
                   </div>
@@ -136,6 +231,7 @@ export default function ReyzumesPage() {
             ))}
         </div>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }

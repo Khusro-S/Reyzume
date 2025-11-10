@@ -8,7 +8,6 @@ export default defineSchema({
     isArchived: v.boolean(),
     folderId: v.optional(v.id("folders")),
     content: v.optional(v.string()),
-    folderIcon: v.optional(v.string()),
     isPublished: v.boolean(),
     updatedAt: v.number(),
   })
