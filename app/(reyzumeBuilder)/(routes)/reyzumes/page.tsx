@@ -199,7 +199,7 @@ export default function ReyzumesPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="absolute top-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-2 right-2 h-8 w-8 p-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                         >
                           <MoreVertical className="h-4 w-4" />
                         </Button>

@@ -135,7 +135,7 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
   // Navbar variant
   if (variant === "navbar") {
     return (
-      <div className="w-full font-medium text-foreground" onClick={handleClick}>
+      <div className="w-full text-foreground" onClick={handleClick}>
         {/* {!!initialData.icon && <p>{initialData.icon}</p>} */}
         <Input
           ref={inputRef}
@@ -154,7 +154,7 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
           onKeyDown={onKeyDown}
           value={displayTitle}
           className={cn(
-            "focus-visible:ring-transparent w-full",
+            "focus-visible:ring-transparent w-full truncate font-medium text-lg sm:text-xl md:text-2xl",
             isEditing ? "" : "border-none shadow-none"
           )}
           onClick={enableEditing}

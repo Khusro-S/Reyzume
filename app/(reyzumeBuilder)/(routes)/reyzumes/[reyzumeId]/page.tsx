@@ -1,6 +1,7 @@
 "use client";
 
 import NavbarReyzume from "@/app/(reyzumeBuilder)/_components/NavbarReyzume";
+import Toolbar from "@/app/(reyzumeBuilder)/_components/Toolbar";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -38,7 +39,8 @@ export default function ReyzumeIdPage() {
       <NavbarReyzume reyzume={reyzume} />
 
       {/* Add padding-top to account for fixed navbar */}
-      <div className="mt-16 min-h-screen max-w-6xl px-4 w-full">
+      <Toolbar />
+      <div className="mt-20 min-h-screen max-w-6xl px-4 w-full">
         <div className="bg-white rounded-xl min-h-screen">
           this is the content
         </div>

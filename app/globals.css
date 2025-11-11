@@ -166,3 +166,12 @@ h6 {
 /* [data-sonner-toast] [data-icon] {
   margin-right: 8px !important;
 } */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
