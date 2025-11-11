@@ -108,7 +108,7 @@ export default function ReyzumesPage() {
   return (
     <div className="flex flex-col gap-5 justify-center items-center">
       <Navbar />
-      <div className="min-h-screen max-w-6xl px-4 w-full">
+      <div className="min-h-screen max-w-6xl px-2 md:px-4 w-full">
         <div className="flex flex-1 flex-col gap-10 bg-background rounded-3xl shadow-lg px-6 py-10 sm:px-8 lg:px-16">
           <div className="w-full flex justify-between">
             <h1 className="text-2xl ">Reyzumes</h1>
@@ -153,7 +153,7 @@ export default function ReyzumesPage() {
                   <div
                     key={reyzume._id}
                     onClick={() => handleResumeClick(reyzume._id)}
-                    className="group relative bg-white border border-gray-200 rounded-lg px-4 py-5 hover:shadow-lg hover:border-primary/50 transition-all ease-initial duration-200 cursor-pointer flex flex-col justify-center items-center gap-5 w-full"
+                    className="group relative bg-white border border-gray-200 rounded-lg px-4 py-5 hover:shadow-lg hover:border-primary/50 transition-all ease-initial duration-200 cursor-pointer flex flex-col justify-center items-center gap-3"
                   >
                     {/* Resume Icon */}
                     <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">

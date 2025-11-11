@@ -9,7 +9,7 @@ export default defineSchema({
     folderId: v.optional(v.id("folders")),
     content: v.optional(v.string()),
     isPublished: v.boolean(),
-    updatedAt: v.number(),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
     .index("by_user_folder", ["userId", "folderId"]),

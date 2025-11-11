@@ -14,14 +14,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface TitleProps {
   initialData: Doc<"reyzumes">;
+  variant?: "card" | "navbar";
 }
 
-export default function Title({ initialData }: TitleProps) {
+export default function Title({ initialData, variant = "card" }: TitleProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
+  const textSpanRef = useRef<HTMLSpanElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
   // const [isEditing, setIsEditing] = useState(false);
@@ -45,11 +48,14 @@ export default function Title({ initialData }: TitleProps) {
 
   // Check if text is truncated
   useEffect(() => {
-    if (textRef.current && !isEditing) {
-      const isTrunc = textRef.current.scrollWidth > textRef.current.clientWidth;
+    if (isEditing) return;
+    const element =
+      variant === "navbar" ? textSpanRef.current : textRef.current;
+    if (element && !isEditing) {
+      const isTrunc = element.scrollWidth > element.clientWidth;
       setIsTruncated(isTrunc);
     }
-  }, [displayTitle, isEditing]);
+  }, [displayTitle, isEditing, variant]);
 
   // Auto-focus when editing starts
   useEffect(() => {
@@ -74,7 +80,7 @@ export default function Title({ initialData }: TitleProps) {
           title: editingTitleValue || "Untitled",
         });
       }
-    }, 100);
+    }, 150);
 
     // Cleanup: cancel the timer if user types again
     return () => {
@@ -116,6 +122,46 @@ export default function Title({ initialData }: TitleProps) {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
+  const enableEditing = () => {
+    if (!isEditing) {
+      const { setEditing } = useTitle.getState();
+      setEditing(initialData._id, initialData.title || "Untitled");
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+      });
+    }
+  };
+
+  // Navbar variant
+  if (variant === "navbar") {
+    return (
+      <div className="w-full font-medium text-foreground" onClick={handleClick}>
+        {/* {!!initialData.icon && <p>{initialData.icon}</p>} */}
+        <Input
+          ref={inputRef}
+          onTouchEnd={(e) => {
+            e.currentTarget.focus();
+          }}
+          //   onClick={enableInput}
+          // onClick={handleClick}
+          onBlur={() => {
+            // Delay blur to allow click events to complete
+            setTimeout(() => {
+              disableInput();
+            }, 150);
+          }}
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          value={displayTitle}
+          className={cn(
+            "focus-visible:ring-transparent w-full",
+            isEditing ? "" : "border-none shadow-none"
+          )}
+          onClick={enableEditing}
+        />
+      </div>
+    );
+  }
   return (
     <div
       className="w-full font-medium text-foreground text-center truncate"
@@ -126,6 +172,9 @@ export default function Title({ initialData }: TitleProps) {
         <Input
           ref={inputRef}
           //   onClick={enableInput}
+          onTouchEnd={(e) => {
+            e.currentTarget.focus();
+          }}
           onClick={handleClick}
           onBlur={() => {
             // Delay blur to allow click events to complete
@@ -145,6 +194,7 @@ export default function Title({ initialData }: TitleProps) {
               <h3
                 ref={textRef}
                 className="font-medium text-foreground truncate w-full"
+                // onTouchEnd={enableEditing}
                 // title=""
               >
                 {displayTitle}

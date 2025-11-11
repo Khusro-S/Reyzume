@@ -21,7 +21,6 @@ export const createReyzume = mutation({
       content: "",
       isArchived: false,
       isPublished: false,
-      updatedAt: Date.now(),
     });
 
     return resumeId;
@@ -102,6 +101,7 @@ export const updateReyzume = mutation({
     content: v.optional(v.string()),
     isArchived: v.optional(v.boolean()),
     isPublished: v.optional(v.boolean()),
+    updatedAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -121,7 +121,33 @@ export const updateReyzume = mutation({
       throw new Error("Unauthorized");
     }
 
-    const reyzume = await ctx.db.patch(id, { ...updates });
+    const reyzume = await ctx.db.patch(id, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+    return reyzume;
+  },
+});
+
+export const getReyzumeById = query({
+  args: { id: v.id("reyzumes") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized or not logged in");
+    }
+
+    const userId = identity.subject;
+    const reyzume = await ctx.db.get(args.id);
+
+    if (!reyzume) {
+      return null;
+    }
+
+    if (reyzume.userId !== userId) {
+      return null;
+    }
+
     return reyzume;
   },
 });
