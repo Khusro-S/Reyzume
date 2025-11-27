@@ -1,0 +1,116 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Section,
+  CustomContent,
+  useReyzumeStore,
+} from "@/hooks/useReyzumeStore";
+import { EditableText } from "../shared/EditableText";
+import { SectionHeader } from "../shared/SectionHeader";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+
+interface CustomSectionProps {
+  section: Section;
+}
+
+export function CustomSection({ section }: CustomSectionProps) {
+  const content = section.content as CustomContent;
+  const addSectionItem = useReyzumeStore((state) => state.addSectionItem);
+  const updateSection = useReyzumeStore((state) => state.updateSection);
+  const updateSectionItem = useReyzumeStore((state) => state.updateSectionItem);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [title, setTitle] = useState(content.title);
+
+  const handleTitleSave = () => {
+    updateSection(section.id, { title });
+    setIsEditingTitle(false);
+  };
+
+  return (
+    <div>
+      <SectionHeader onAdd={() => addSectionItem(section.id)}>
+        <div className="flex items-center gap-2 group/title">
+          {isEditingTitle ? (
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="text-lg font-semibold bg-transparent outline-none border-b border-primary"
+              autoFocus
+              onBlur={handleTitleSave}
+              onKeyDown={(e) => e.key === "Enter" && handleTitleSave()}
+            />
+          ) : (
+            <>
+              <h2 className="text-lg font-semibold">{content.title}</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 w-5 p-0 opacity-0 group-hover/title:opacity-100 transition-opacity"
+                onClick={() => setIsEditingTitle(true)}
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </>
+          )}
+        </div>
+      </SectionHeader>
+      <div className="space-y-4">
+        {content.items.map((item) => (
+          <div key={item.id} className="space-y-1">
+            {/* Title and Dates */}
+            <div className="flex justify-between items-baseline gap-4">
+              <EditableText
+                value={item.title}
+                onChange={(val) =>
+                  updateSectionItem(section.id, item.id, { title: val })
+                }
+                className="font-semibold"
+                placeholder="Title"
+              />
+              <div className="flex gap-1 shrink-0 text-sm text-muted-foreground whitespace-nowrap">
+                <EditableText
+                  value={item.startDate || ""}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, { startDate: val })
+                  }
+                  className="w-[70px] text-right text-sm"
+                  placeholder="Start"
+                />
+                <span>-</span>
+                <EditableText
+                  value={item.endDate || ""}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, { endDate: val })
+                  }
+                  className="w-[70px] text-sm"
+                  placeholder="End"
+                />
+              </div>
+            </div>
+            {/* Subtitle */}
+            <EditableText
+              value={item.subtitle || ""}
+              onChange={(val) =>
+                updateSectionItem(section.id, item.id, { subtitle: val })
+              }
+              className="text-sm font-medium text-muted-foreground"
+              placeholder="Subtitle"
+            />
+            {/* Description */}
+            <EditableText
+              value={item.description || ""}
+              onChange={(val) =>
+                updateSectionItem(section.id, item.id, { description: val })
+              }
+              className="text-sm whitespace-pre-line mt-1"
+              placeholder="Description..."
+              multiline
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

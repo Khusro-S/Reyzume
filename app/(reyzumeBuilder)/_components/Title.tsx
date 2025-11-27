@@ -116,6 +116,8 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" || event.key === "Escape") {
+      event.preventDefault();
+      event.currentTarget.blur();
       disableInput();
     }
   };
