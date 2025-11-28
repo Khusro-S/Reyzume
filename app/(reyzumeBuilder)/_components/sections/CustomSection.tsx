@@ -11,6 +11,7 @@ import { SectionHeader } from "../shared/SectionHeader";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { MonthYearPicker } from "../shared/MonthYearPicker";
+import { DeleteButton } from "../shared/DeleteButton";
 
 interface CustomSectionProps {
   section: Section;
@@ -21,8 +22,12 @@ export function CustomSection({ section }: CustomSectionProps) {
   const addSectionItem = useReyzumeStore((state) => state.addSectionItem);
   const updateSection = useReyzumeStore((state) => state.updateSection);
   const updateSectionItem = useReyzumeStore((state) => state.updateSectionItem);
+  const removeSectionItem = useReyzumeStore((state) => state.removeSectionItem);
+
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [title, setTitle] = useState(content.title);
+
+  const canDelete = content.items.length > 1;
 
   const handleTitleSave = () => {
     updateSection(section.id, { title });
@@ -59,17 +64,26 @@ export function CustomSection({ section }: CustomSectionProps) {
       </SectionHeader>
       <div className="space-y-4">
         {content.items.map((item) => (
-          <div key={item.id} className="space-y-1">
+          <div key={item.id} className="space-y-1 group/item">
             {/* Title and Dates */}
             <div className="flex justify-between items-baseline gap-4">
-              <EditableText
-                value={item.title}
-                onChange={(val) =>
-                  updateSectionItem(section.id, item.id, { title: val })
-                }
-                className="font-semibold"
-                placeholder="Title"
-              />
+              <div className=" flex gap-1 ">
+                <EditableText
+                  value={item.title}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, { title: val })
+                  }
+                  className="font-semibold"
+                  placeholder="Title"
+                />
+                {canDelete && (
+                  <DeleteButton
+                    onDelete={() => removeSectionItem(section.id, item.id)}
+                    itemName="section item"
+                    className="opacity-0 group-hover/item:opacity-100 transition-opacity"
+                  />
+                )}
+              </div>
               <div className="flex gap-1 shrink-0 text-sm text-muted-foreground whitespace-nowrap">
                 <MonthYearPicker
                   value={item.startDate || ""}

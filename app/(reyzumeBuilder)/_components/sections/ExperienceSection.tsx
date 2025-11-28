@@ -8,6 +8,7 @@ import {
 import { EditableText } from "../shared/EditableText";
 import { SectionHeader } from "../shared/SectionHeader";
 import { MonthYearPicker } from "../shared/MonthYearPicker";
+import { DeleteButton } from "../shared/DeleteButton";
 
 interface ExperienceSectionProps {
   section: Section;
@@ -18,6 +19,9 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
 
   const addSectionItem = useReyzumeStore((state) => state.addSectionItem);
   const updateSectionItem = useReyzumeStore((state) => state.updateSectionItem);
+  const removeSectionItem = useReyzumeStore((state) => state.removeSectionItem);
+
+  const canDelete = content.items.length > 1;
 
   return (
     <div>
@@ -28,23 +32,32 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
       </SectionHeader>
       <div className="space-y-4">
         {content.items.map((item) => (
-          <div key={item.id} className="space-y-1">
+          <div key={item.id} className="space-y-1 group/item">
             {/* Title and Location */}
             <div className="flex justify-between items-baseline gap-4">
-              <EditableText
-                value={item.title}
-                onChange={(val) =>
-                  updateSectionItem(section.id, item.id, { title: val })
-                }
-                className="font-semibold"
-                placeholder="Job Title"
-              />
+              <div className=" flex gap-1 ">
+                <EditableText
+                  value={item.title}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, { title: val })
+                  }
+                  className="font-semibold"
+                  placeholder="Job Title"
+                />
+                {canDelete && (
+                  <DeleteButton
+                    onDelete={() => removeSectionItem(section.id, item.id)}
+                    itemName="section item"
+                    className="opacity-0 group-hover/item:opacity-100 transition-opacity"
+                  />
+                )}
+              </div>
               <EditableText
                 value={item.location}
                 onChange={(val) =>
                   updateSectionItem(section.id, item.id, { location: val })
                 }
-                className="text-right"
+                className="text-right text-sm"
                 placeholder="City, Country"
               />
             </div>

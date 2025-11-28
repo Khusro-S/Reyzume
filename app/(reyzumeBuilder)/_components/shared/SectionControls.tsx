@@ -1,18 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, Trash2 } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { Eye, EyeOff } from "lucide-react";
+import { DeleteButton } from "./DeleteButton";
 
 interface SectionControlsProps {
   sectionType: string;
@@ -37,7 +27,7 @@ export function SectionControls({
     sectionType.charAt(0).toUpperCase() + sectionType.slice(1);
 
   return (
-    <div className="absolute right-0 top-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+    <div className="absolute right-1 top-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
       {/* Toggle visibility */}
       <Button
         variant="ghost"
@@ -55,36 +45,13 @@ export function SectionControls({
 
       {/* Delete section */}
       {isDeletable && (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 hover:bg-destructive/10"
-              title={`Delete ${formattedType}`}
-            >
-              <Trash2 className="h-4 w-4 text-destructive" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete {formattedType}?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently delete the {formattedType} section and all
-                its content. This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={onDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 text-white"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <DeleteButton
+          onDelete={onDelete}
+          itemName={`${formattedType} section`}
+          showConfirmation={true}
+          disabled={!isDeletable}
+          size="default"
+        />
       )}
     </div>
   );

@@ -7,6 +7,7 @@ import {
 } from "@/hooks/useReyzumeStore";
 import { EditableText } from "../shared/EditableText";
 import { SectionHeader } from "../shared/SectionHeader";
+import { DeleteButton } from "../shared/DeleteButton";
 
 interface SkillsSectionProps {
   section: Section;
@@ -17,6 +18,9 @@ export function SkillsSection({ section }: SkillsSectionProps) {
 
   const addSectionItem = useReyzumeStore((state) => state.addSectionItem);
   const updateSectionItem = useReyzumeStore((state) => state.updateSectionItem);
+  const removeSectionItem = useReyzumeStore((state) => state.removeSectionItem);
+
+  const canDelete = content.items.length > 1;
 
   return (
     <div>
@@ -28,7 +32,7 @@ export function SkillsSection({ section }: SkillsSectionProps) {
         {content.items?.map((category) => (
           <div
             key={category.id}
-            className="flex items-center justify-center gap-2"
+            className="flex items-center justify-center gap-2 group/item"
           >
             <div className="flex justify-center items-center max-w-[120px]">
               <EditableText
@@ -51,6 +55,13 @@ export function SkillsSection({ section }: SkillsSectionProps) {
               placeholder="Microsoft Office (Excel, Word, PowerPoint), JavaScript, React"
               multiline
             />
+            {canDelete && (
+              <DeleteButton
+                onDelete={() => removeSectionItem(section.id, category.id)}
+                itemName="section item"
+                className="opacity-0 group-hover/item:opacity-100 transition-opacity"
+              />
+            )}
           </div>
         ))}
       </div>
