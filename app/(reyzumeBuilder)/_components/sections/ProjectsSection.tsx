@@ -43,8 +43,8 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, { startDate: val })
                   }
-                  className="w-[70px] text-right text-sm"
-                  placeholder="Start"
+                  className="w-auto max-w-[70px] text-right text-sm"
+                  placeholder="Start Date"
                 />
                 <span>-</span>
                 <EditableText
@@ -52,8 +52,8 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, { endDate: val })
                   }
-                  className="w-[70px] text-sm"
-                  placeholder="End"
+                  className=" w-auto max-w-[70px] text-sm"
+                  placeholder="End Date"
                 />
               </div>
             </div>

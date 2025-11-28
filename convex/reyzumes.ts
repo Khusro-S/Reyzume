@@ -86,7 +86,7 @@ export const getReyzumes = query({
     const reyzumes = await ctx.db
       .query("reyzumes")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .filter((q) => q.eq(q.field("isArchived"), false))
+      // .filter((q) => q.eq(q.field("isArchived"), false))
       .order("desc")
       .collect();
 
@@ -129,25 +129,160 @@ export const updateReyzume = mutation({
   },
 });
 
+// Get a single reyzume by ID
 export const getReyzumeById = query({
   args: { id: v.id("reyzumes") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized or not logged in");
+      throw new Error("Not authenticated");
     }
 
-    const userId = identity.subject;
     const reyzume = await ctx.db.get(args.id);
 
     if (!reyzume) {
-      return null;
+      throw new Error("Reyzume not found");
     }
 
-    if (reyzume.userId !== userId) {
-      return null;
+    if (reyzume.userId !== identity.subject) {
+      throw new Error("Unauthorized");
     }
 
     return reyzume;
+  },
+});
+
+// Update reyzume content (sections)
+export const updateContent = mutation({
+  args: {
+    id: v.id("reyzumes"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const existingReyzume = await ctx.db.get(args.id);
+
+    if (!existingReyzume) {
+      throw new Error("Resume not found");
+    }
+
+    if (existingReyzume.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.id, {
+      content: args.content,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+// ...existing code...
+
+// Delete a reyzume permanently
+export const deleteReyzume = mutation({
+  args: { id: v.id("reyzumes") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const existingReyzume = await ctx.db.get(args.id);
+
+    if (!existingReyzume) {
+      throw new Error("Reyzume not found");
+    }
+
+    if (existingReyzume.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.delete(args.id);
+
+    return { success: true };
+  },
+});
+
+// Soft delete (archive) a reyzume
+export const archiveReyzume = mutation({
+  args: { id: v.id("reyzumes") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const existingReyzume = await ctx.db.get(args.id);
+
+    if (!existingReyzume) {
+      throw new Error("Reyzume not found");
+    }
+
+    if (existingReyzume.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.id, {
+      isArchived: true,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+// Restore an archived reyzume
+export const restoreReyzume = mutation({
+  args: { id: v.id("reyzumes") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const existingReyzume = await ctx.db.get(args.id);
+
+    if (!existingReyzume) {
+      throw new Error("Reyzume not found");
+    }
+
+    if (existingReyzume.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.id, {
+      isArchived: false,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+// Get archived reyzumes
+export const getArchivedReyzumes = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return [];
+    }
+
+    const userId = identity.subject;
+
+    const archivedReyzumes = await ctx.db
+      .query("reyzumes")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .filter((q) => q.eq(q.field("isArchived"), true))
+      .order("desc")
+      .collect();
+
+    return archivedReyzumes;
   },
 });

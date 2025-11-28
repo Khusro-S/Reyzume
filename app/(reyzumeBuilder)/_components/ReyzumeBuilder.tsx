@@ -23,9 +23,54 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { SectionBlock } from "./SectionBlock";
+import { HiddenSectionsPanel } from "./sections/HiddenSectionsPanel";
+import { useParams } from "next/navigation";
+import { Id } from "@/convex/_generated/dataModel";
+import { useReyzumeSync } from "@/hooks/useReyzumeSync";
+import { Check, Loader2 } from "lucide-react";
 
 export default function ReyzumeBuilder() {
-  const { visibleSections, reorderSections } = useReyzumeSections();
+  const params = useParams();
+  const reyzumeId = params.reyzumeId as Id<"reyzumes">;
+
+  const { isLoading, isSaving } = useReyzumeSync(reyzumeId);
+  // const { isLoading } = useReyzumeSync(reyzumeId);
+
+  const { reorderSections, visibleSections } = useReyzumeSections();
+
+  const [showSaved, setShowSaved] = useState(false);
+
+  // Show "Saved" for 2 seconds after saving completes
+  useEffect(() => {
+    if (isSaving) return;
+
+    // When isSaving becomes false, show "Saved"
+    const showTimer = setTimeout(() => setShowSaved(true), 0);
+    const hideTimer = setTimeout(() => setShowSaved(false), 2000);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, [isSaving]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+  // const sensors = useSensors(
+  //   useSensor(PointerSensor),
+  //   useSensor(KeyboardSensor, {
+  //     coordinateGetter: sortableKeyboardCoordinates,
+  //   })
+  // );
+
+  // const { visibleSections, reorderSections } = useReyzumeSections();
   const contentRef = useRef<HTMLDivElement>(null);
   const [containerHeight, setContainerHeight] = useState("297mm");
 
@@ -49,7 +94,7 @@ export default function ReyzumeBuilder() {
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
+  }, [isLoading]); // Re-run when loading state changes
 
   const fixedSections = visibleSections.filter(
     (s) => s.type === "header" || s.type === "summary"
@@ -58,20 +103,8 @@ export default function ReyzumeBuilder() {
     (s) => s.type !== "header" && s.type !== "summary"
   );
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (over && active.id !== over.id) {
       const oldIndex = draggableSections.findIndex((s) => s.id === active.id);
       const newIndex = draggableSections.findIndex((s) => s.id === over.id);
@@ -80,8 +113,6 @@ export default function ReyzumeBuilder() {
         oldIndex,
         newIndex
       );
-
-      // Combine fixed and reordered draggable sections to update all orders
       const newSections = [...fixedSections, ...reorderedDraggable].map(
         (section, index) => ({
           ...section,
@@ -91,6 +122,36 @@ export default function ReyzumeBuilder() {
       reorderSections(newSections);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  // const handleDragEnd = (event: DragEndEvent) => {
+  //   const { active, over } = event;
+
+  //   if (over && active.id !== over.id) {
+  //     const oldIndex = draggableSections.findIndex((s) => s.id === active.id);
+  //     const newIndex = draggableSections.findIndex((s) => s.id === over.id);
+  //     const reorderedDraggable = arrayMove(
+  //       draggableSections,
+  //       oldIndex,
+  //       newIndex
+  //     );
+
+  //     // Combine fixed and reordered draggable sections to update all orders
+  //     const newSections = [...fixedSections, ...reorderedDraggable].map(
+  //       (section, index) => ({
+  //         ...section,
+  //         order: index,
+  //       })
+  //     );
+  //     reorderSections(newSections);
+  //   }
+  // };
 
   return (
     <div className="flex justify-center pb-20">
@@ -104,6 +165,20 @@ export default function ReyzumeBuilder() {
           backgroundSize: "100% 297mm",
         }}
       >
+        <div className="absolute top-20 right-2 text-xl text-muted-foreground print:hidden z-100">
+          {isSaving && (
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Saving...
+            </div>
+          )}
+          {showSaved && !isSaving && (
+            <div className="flex items-center gap-1 text-sm text-green-400">
+              <Check className="h-4 w-4" />
+              Saved
+            </div>
+          )}
+        </div>
         <div className="space-y-2" ref={contentRef}>
           {/* Fixed Sections (Header, Summary) */}
           {fixedSections.map((section) => (
@@ -138,6 +213,7 @@ export default function ReyzumeBuilder() {
           </DndContext>
         </div>
       </div>
+      <HiddenSectionsPanel />
     </div>
   );
 }

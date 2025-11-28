@@ -1,3 +1,4 @@
+import { Id } from "@/convex/_generated/dataModel";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -18,7 +19,7 @@ export interface HeaderContent {
   // phone?: string;
   // location?: string;
   contactInfo: string;
-  links?: { label: string; url: string }[];
+  // links?: { label: string; url: string }[];
 }
 
 export interface SummaryContent {
@@ -123,21 +124,37 @@ export interface Section {
 }
 
 interface ReyzumeStore {
+  currentReyzumeId: Id<"reyzumes"> | null;
+
   sections: Section[];
 
+  isLoading: boolean;
+
+  // Dirty state (unsaved changes)
+  isDirty: boolean;
+
   // Actions
+  setCurrentReyzumeId: (id: Id<"reyzumes"> | null) => void;
+  loadSections: (content: string | undefined) => void;
+  getSectionsAsJson: () => string;
+  setIsLoading: (loading: boolean) => void;
+  markClean: () => void; // for updating isDirty (indicating there are no unsaved changes)
+
+  // Section CRUD
   addSection: (type: SectionType) => void;
   removeSection: (id: string) => void;
+  updateSection: (id: string, content: Partial<Section["content"]>) => void;
+  toggleSectionVisibility: (id: string) => void;
+  reorderSections: (sections: Section[]) => void;
+
+  // Item CRUD within sections
   addSectionItem: (sectionId: string) => void;
   removeSectionItem: (sectionId: string, itemId: string) => void;
-  updateSection: (id: string, content: Partial<Section["content"]>) => void;
   updateSectionItem: (
     sectionId: string,
     itemId: string,
     content: Record<string, unknown>
   ) => void;
-  reorderSections: (sections: Section[]) => void;
-  toggleSectionVisibility: (id: string) => void;
 }
 // Helper to generate IDs that works in non-secure contexts (like mobile dev)
 function generateId() {
@@ -152,7 +169,45 @@ function generateId() {
 }
 export const useReyzumeStore = create<ReyzumeStore>()(
   devtools(
-    (set) => ({
+    (set, get) => ({
+      // Initial state
+      currentReyzumeId: null,
+      isLoading: true,
+      isDirty: false,
+
+      // Actions
+      setCurrentReyzumeId: (id) => set({ currentReyzumeId: id }),
+
+      setIsLoading: (loading) => set({ isLoading: loading }),
+
+      markClean: () => set({ isDirty: false }),
+
+      loadSections: (content) => {
+        if (content) {
+          try {
+            const parsed = JSON.parse(content) as Section[];
+            set({ sections: parsed, isLoading: false, isDirty: false });
+          } catch (e) {
+            console.error("Failed to parse resume content:", e);
+            set({
+              sections: getDefaultSections(),
+              isLoading: false,
+              isDirty: false,
+            });
+          }
+        } else {
+          set({
+            sections: getDefaultSections(),
+            isLoading: false,
+            isDirty: true,
+          });
+        }
+      },
+
+      getSectionsAsJson: () => {
+        return JSON.stringify(get().sections);
+      },
+
       sections: [
         {
           id: "header-1",
@@ -192,8 +247,8 @@ export const useReyzumeStore = create<ReyzumeStore>()(
                 title: "",
                 company: "",
                 location: "",
-                startDate: "MM/YYYY",
-                endDate: "MM/YYYY",
+                startDate: "",
+                endDate: "",
                 current: false,
                 description: "",
                 // "• Achieved X by doing Y\n• Led a team of Z people",
@@ -213,8 +268,8 @@ export const useReyzumeStore = create<ReyzumeStore>()(
                 name: "",
                 description: "",
                 url: "",
-                startDate: "MM/YYYY",
-                endDate: "MM/YYYY",
+                startDate: "",
+                endDate: "",
               },
             ],
           } as ProjectsContent,
@@ -251,8 +306,8 @@ export const useReyzumeStore = create<ReyzumeStore>()(
                 id: generateId(),
                 title: "",
                 subtitle: "",
-                startDate: "MM/YYYY",
-                endDate: "MM/YYYY",
+                startDate: "",
+                endDate: "",
                 description: "",
               },
             ],
@@ -261,22 +316,57 @@ export const useReyzumeStore = create<ReyzumeStore>()(
       ],
 
       addSection: (type) =>
+        set((state) => ({
+          sections: [
+            ...state.sections,
+            {
+              id: generateId(),
+              type,
+              order: state.sections.length,
+              isVisible: true,
+              content: getSectionDefaultContent(type),
+            },
+          ],
+          isDirty: true,
+        })),
+
+      removeSection: (sectionId) =>
+        set((state) => ({
+          sections: state.sections.filter((s) => s.id !== sectionId),
+          isDirty: true,
+        })),
+
+      updateSection: (sectionId, content) =>
+        set((state) => ({
+          sections: state.sections.map((s) =>
+            s.id === sectionId
+              ? {
+                  ...s,
+                  content: { ...s.content, ...content } as SectionContent,
+                }
+              : s
+          ),
+          isDirty: true,
+        })),
+
+      reorderSections: (newSections: Section[]) =>
         set((state) => {
-          const maxOrder = Math.max(...state.sections.map((s) => s.order), -1);
-          const newSection: Section = {
-            // id: crypto.randomUUID(),
-            id: generateId(),
-            type,
-            order: maxOrder + 1,
-            isVisible: true,
-            content: getSectionDefaultContent(type),
+          // Merge reordered visible sections with hidden sections
+          const hiddenSections = state.sections.filter((s) => !s.isVisible);
+          const allSections = [...newSections, ...hiddenSections];
+
+          return {
+            sections: allSections,
+            isDirty: true,
           };
-          return { sections: [...state.sections, newSection] };
         }),
 
-      removeSection: (id) =>
+      toggleSectionVisibility: (sectionId) =>
         set((state) => ({
-          sections: state.sections.filter((s) => s.id !== id),
+          sections: state.sections.map((s) =>
+            s.id === sectionId ? { ...s, isVisible: !s.isVisible } : s
+          ),
+          isDirty: true,
         })),
 
       addSectionItem: (sectionId) =>
@@ -285,119 +375,127 @@ export const useReyzumeStore = create<ReyzumeStore>()(
             if (section.id !== sectionId) return section;
 
             const newItem = getSectionDefaultItem(section.type);
-            if (!newItem) return section;
-
-            if ("items" in section.content) {
-              return {
-                ...section,
-                content: {
-                  ...section.content,
-                  items: [...section.content.items, newItem],
-                } as SectionContent,
-              };
-            }
-            return section;
+            const sectionContent = section.content as { items: unknown[] };
+            return {
+              ...section,
+              content: {
+                ...sectionContent,
+                items: [...(sectionContent.items || []), newItem],
+              } as SectionContent,
+            };
           }),
-        })),
-
-      removeSectionItem: (sectionId, itemId) =>
-        set((state) => ({
-          sections: state.sections.map((section) => {
-            if (section.id !== sectionId) return section;
-
-            if ("items" in section.content) {
-              return {
-                ...section,
-                content: {
-                  ...section.content,
-                  items: section.content.items.filter(
-                    (
-                      item:
-                        | ExperienceItem
-                        | EducationItem
-                        | SkillItem
-                        | ProjectItem
-                        | CertificationItem
-                        | CustomItem
-                    ) => item.id !== itemId
-                  ),
-                } as SectionContent,
-              };
-            }
-            return section;
-          }),
-        })),
-
-      updateSection: (id, content) =>
-        set((state) => ({
-          sections: state.sections.map((s) =>
-            s.id === id
-              ? {
-                  ...s,
-                  content: { ...s.content, ...content } as SectionContent,
-                }
-              : s
-          ),
+          isDirty: true,
         })),
 
       updateSectionItem: (sectionId, itemId, content) =>
         set((state) => ({
           sections: state.sections.map((s) => {
             if (s.id !== sectionId) return s;
-            // Check if content has items array
-            if ("items" in s.content && Array.isArray(s.content.items)) {
-              return {
-                ...s,
-                content: {
-                  ...s.content,
-                  items: s.content.items.map(
-                    (
-                      item:
-                        | ExperienceItem
-                        | EducationItem
-                        | SkillItem
-                        | ProjectItem
-                        | CertificationItem
-                        | CustomItem
-                    ) => (item.id === itemId ? { ...item, ...content } : item)
-                  ),
-                } as SectionContent,
-              };
-            }
-            return s;
+
+            const sectionContent = s.content as { items: { id: string }[] };
+            if (!sectionContent.items) return s;
+
+            return {
+              ...s,
+              content: {
+                ...sectionContent,
+                items: sectionContent.items.map((item) =>
+                  item.id === itemId ? { ...item, ...content } : item
+                ),
+              } as SectionContent,
+            };
           }),
+          isDirty: true,
         })),
 
-      reorderSections: (sections) => set({ sections }),
-
-      toggleSectionVisibility: (id) =>
+      removeSectionItem: (sectionId, itemId) =>
         set((state) => ({
-          sections: state.sections.map((s) =>
-            s.id === id ? { ...s, isVisible: !s.isVisible } : s
-          ),
+          sections: state.sections.map((s) => {
+            if (s.id !== sectionId) return s;
+
+            const sectionContent = s.content as { items: { id: string }[] };
+            if (!sectionContent.items) return s;
+
+            return {
+              ...s,
+              content: {
+                ...sectionContent,
+                items: sectionContent.items.filter(
+                  (item) => item.id !== itemId
+                ),
+              } as SectionContent,
+            };
+          }),
+          isDirty: true,
         })),
     }),
     { name: "ReyzumeStore" }
   )
 );
-
+// Default sections for a new resume
+export function getDefaultSections(): Section[] {
+  return [
+    {
+      id: "header-1",
+      type: "header",
+      order: 0,
+      isVisible: true,
+      content: getSectionDefaultContent("header"),
+    },
+    {
+      id: "summary-1",
+      type: "summary",
+      order: 1,
+      isVisible: true,
+      content: getSectionDefaultContent("summary"),
+    },
+    {
+      id: "experience-1",
+      type: "experience",
+      order: 2,
+      isVisible: true,
+      content: getSectionDefaultContent("experience"),
+    },
+    {
+      id: "projects-1",
+      type: "projects",
+      order: 3,
+      isVisible: true,
+      content: getSectionDefaultContent("projects"),
+    },
+    {
+      id: "education-1",
+      type: "education",
+      order: 4,
+      isVisible: true,
+      content: getSectionDefaultContent("education"),
+    },
+    {
+      id: "skills-1",
+      type: "skills",
+      order: 5,
+      isVisible: true,
+      content: getSectionDefaultContent("skills"),
+    },
+  ];
+}
 // Helper function for default content
 function getSectionDefaultContent(type: SectionType): SectionContent {
   switch (type) {
     case "header":
       return {
-        name: "Your Name",
+        name: "",
         // title: "Your Title",
         // email: "email@example.com",
         // phone: "(555) 123-4567",
         // location: "City",
-        contactInfo: "email@example.com | (555) 123-4567 | City, Country",
+        contactInfo: "",
         links: [],
-      };
+      } as HeaderContent;
     case "summary":
       return {
         text: "Experienced professional with a strong background in...",
-      };
+      } as SummaryContent;
     case "experience":
       return {
         items: [getSectionDefaultItem("experience") as ExperienceItem],
@@ -424,7 +522,7 @@ function getSectionDefaultContent(type: SectionType): SectionContent {
         items: [getSectionDefaultItem("custom") as CustomItem],
       } as CustomContent;
     default:
-      return { text: "" } as SummaryContent;
+      return {} as SectionContent;
   }
 }
 
@@ -433,13 +531,13 @@ function getSectionDefaultItem(type: SectionType) {
     case "experience":
       return {
         id: generateId(),
-        title: "Job Title",
-        company: "Company Name",
-        location: "City, Country",
-        startDate: "MM/YYYY",
-        endDate: "MM/YYYY",
+        title: "",
+        company: "",
+        location: "",
+        startDate: "",
+        endDate: "",
         current: false,
-        description: "• Achieved X by doing Y\n• Led a team of Z people",
+        description: "",
       };
     case "education":
       return {
@@ -447,43 +545,43 @@ function getSectionDefaultItem(type: SectionType) {
         degree: "",
         school: "",
         location: "",
-        startDate: "MM/YYYY",
-        graduationDate: "MM/YYYY",
+        startDate: "",
+        graduationDate: "",
         current: false,
         description: "",
       };
     case "skills":
       return {
         id: generateId(),
-        label: "Category",
-        skills: "Skill 1, Skill 2, Skill 3",
+        label: "Skills",
+        skills: "",
       };
     case "projects":
       return {
         id: generateId(),
-        name: "Project Name",
-        description: "Project description...",
-        url: "https://project-url.com",
-        startDate: "MM/YYYY",
-        endDate: "MM/YYYY",
+        name: "",
+        description: "",
+        url: "",
+        startDate: "",
+        endDate: "",
       };
     case "certifications":
       return {
         id: generateId(),
         name: "",
         issuer: "",
-        date: "MM/YYYY",
+        date: "",
       };
     case "custom":
       return {
         id: generateId(),
-        title: "Item Title",
-        subtitle: "Subtitle",
-        startDate: "MM/YYYY",
-        endDate: "MM/YYYY",
-        description: "Description...",
+        title: "",
+        subtitle: "",
+        startDate: "",
+        endDate: "",
+        description: "",
       };
     default:
-      return null;
+      return { id: generateId() };
   }
 }

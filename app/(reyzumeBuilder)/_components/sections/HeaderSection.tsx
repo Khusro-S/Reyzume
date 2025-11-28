@@ -42,12 +42,12 @@ export function HeaderSection({ section }: HeaderSectionProps) {
   const locationFromTimezone = getLocationFromTimezone();
 
   const displayName = content.name || user?.fullName || "";
-  //   const displayContactInfo =
-  //     content.contactInfo ||
-  //     [user?.primaryEmailAddress?.emailAddress, locationFromTimezone]
-  //       .filter(Boolean)
-  //       .join(" | ") ||
-  //     "";
+  // const displayContactInfo =
+  //   content.contactInfo ||
+  //   [user?.primaryEmailAddress?.emailAddress, locationFromTimezone]
+  //     .filter(Boolean)
+  //     .join(" | ") ||
+  //   "";
 
   const displayContactInfo =
     content.contactInfo ||

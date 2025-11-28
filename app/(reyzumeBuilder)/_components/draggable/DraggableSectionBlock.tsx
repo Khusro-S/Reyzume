@@ -1,16 +1,24 @@
 "use client";
 
-import { Section } from "@/hooks/useReyzumeStore";
+import { Section, useReyzumeStore } from "@/hooks/useReyzumeStore";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 import { SectionContent } from "./SectionContent";
+import { cn } from "@/lib/utils";
+import { SectionControls } from "../shared/SectionControls";
 
 interface DraggableSectionBlockProps {
   section: Section;
 }
 
 export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
+  const toggleVisibility = useReyzumeStore(
+    (state) => state.toggleSectionVisibility
+  );
+
+  const removeSection = useReyzumeStore((state) => state.removeSection);
+
   const {
     attributes,
     listeners,
@@ -30,7 +38,11 @@ export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="relative group border border-transparent hover:border-border rounded-lg p-3 transition-all print:break-inside-avoid"
+      //   className="relative group border border-transparent hover:border-border rounded-lg p-3 transition-all print:break-inside-avoid"
+      className={cn(
+        "relative group border border-transparent hover:border-border rounded-lg p-3 transition-all print:break-inside-avoid",
+        !section.isVisible && "opacity-50"
+      )}
     >
       {/* Drag handle */}
       <button
@@ -41,6 +53,14 @@ export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
         <GripVertical className="md:h-5 md:w-5 h-6 w-6 text-muted-foreground" />
       </button>
 
+      {/* Section controls (visibility toggle, delete) */}
+      <SectionControls
+        // sectionId={section.id}
+        sectionType={section.type}
+        isVisible={section.isVisible}
+        onToggleVisibility={() => toggleVisibility(section.id)}
+        onDelete={() => removeSection(section.id)}
+      />
       {/* Render section content based on type */}
       <SectionContent section={section} />
     </div>
