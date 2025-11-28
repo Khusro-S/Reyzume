@@ -165,7 +165,7 @@ export default function ReyzumeBuilder() {
           backgroundSize: "100% 297mm",
         }}
       >
-        <div className="absolute top-20 right-2 text-xl text-muted-foreground print:hidden z-100">
+        <div className="fixed top-20 right-2 md:right-4 text-xl text-muted-foreground print:hidden z-100">
           {isSaving && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />

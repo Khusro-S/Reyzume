@@ -7,6 +7,7 @@ import {
 } from "@/hooks/useReyzumeStore";
 import { EditableText } from "../shared/EditableText";
 import { SectionHeader } from "../shared/SectionHeader";
+import { MonthYearPicker } from "../shared/MonthYearPicker";
 
 interface EducationSectionProps {
   section: Section;
@@ -57,16 +58,35 @@ export function EducationSection({ section }: EducationSectionProps) {
                 placeholder="Degree"
               />
               <div className="flex gap-1 shrink-0 text-sm text-muted-foreground whitespace-nowrap">
-                <EditableText
+                <MonthYearPicker
+                  value={item.startDate || ""}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, { startDate: val })
+                  }
+                  placeholder="Start"
+                  className="text-sm"
+                />
+                {/* <EditableText
                   value={item.startDate}
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, { startDate: val })
                   }
                   className="w-auto max-w-[70px] text-right text-sm"
                   placeholder="Start Date"
-                />
+                /> */}
                 <span>-</span>
-                <EditableText
+                <MonthYearPicker
+                  value={item.graduationDate || ""}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, {
+                      graduationDate: val,
+                    })
+                  }
+                  placeholder="End"
+                  className="text-sm"
+                  allowPresent
+                />
+                {/* <EditableText
                   value={item.graduationDate}
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, {
@@ -75,7 +95,7 @@ export function EducationSection({ section }: EducationSectionProps) {
                   }
                   className="mw-auto max-w-[70px] text-sm"
                   placeholder="End Date"
-                />
+                /> */}
               </div>
             </div>
             {/* Description */}
