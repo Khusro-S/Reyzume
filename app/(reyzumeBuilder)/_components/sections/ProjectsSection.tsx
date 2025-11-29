@@ -9,6 +9,8 @@ import { EditableText } from "../shared/EditableText";
 import { SectionHeader } from "../shared/SectionHeader";
 import { MonthYearPicker } from "../shared/MonthYearPicker";
 import { DeleteButton } from "../shared/DeleteButton";
+import { SortableItemList } from "../draggable/SortableItemList";
+import { DraggableItem } from "../draggable/DraggableItem";
 
 interface ProjectsSectionProps {
   section: Section;
@@ -20,6 +22,9 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
   const addSectionItem = useReyzumeStore((state) => state.addSectionItem);
   const updateSectionItem = useReyzumeStore((state) => state.updateSectionItem);
   const removeSectionItem = useReyzumeStore((state) => state.removeSectionItem);
+  const reorderSectionItems = useReyzumeStore(
+    (state) => state.reorderSectionItems
+  );
 
   const canDelete = content.items.length > 1;
 
@@ -29,12 +34,20 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
         title="Projects"
         onAdd={() => addSectionItem(section.id)}
       />
-      <div className="space-y-4">
+      <SortableItemList
+        items={content.items}
+        onReorder={(items) => reorderSectionItems(section.id, items)}
+        className="space-y-4"
+      >
         {content.items.map((item) => (
-          <div key={item.id} className="space-y-1 group/item">
+          <DraggableItem
+            key={item.id}
+            id={item.id}
+            className="space-y-1 group/item"
+          >
             {/* Project Name and Dates */}
             <div className="flex justify-between items-baseline gap-4">
-              <div className=" flex gap-1 ">
+              <div className="flex gap-1">
                 <EditableText
                   value={item.name}
                   onChange={(val) =>
@@ -43,7 +56,6 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
                   className="font-semibold"
                   placeholder="Project Name"
                 />
-                {/* Delete item button */}
                 {canDelete && (
                   <DeleteButton
                     onDelete={() => removeSectionItem(section.id, item.id)}
@@ -61,14 +73,6 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
                   placeholder="Start"
                   className="text-sm"
                 />
-                {/* <EditableText
-                  value={item.startDate || ""}
-                  onChange={(val) =>
-                    updateSectionItem(section.id, item.id, { startDate: val })
-                  }
-                  className="w-auto max-w-[70px] text-right text-sm"
-                  placeholder="Start Date"
-                /> */}
                 <span>-</span>
                 <MonthYearPicker
                   value={item.endDate || ""}
@@ -79,14 +83,6 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
                   className="text-sm"
                   allowPresent
                 />
-                {/* <EditableText
-                  value={item.endDate || ""}
-                  onChange={(val) =>
-                    updateSectionItem(section.id, item.id, { endDate: val })
-                  }
-                  className=" w-auto max-w-[70px] text-sm"
-                  placeholder="End Date"
-                /> */}
               </div>
             </div>
             {/* URL */}
@@ -108,9 +104,9 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
               placeholder="Project description..."
               multiline
             />
-          </div>
+          </DraggableItem>
         ))}
-      </div>
+      </SortableItemList>
     </div>
   );
 }

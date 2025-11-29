@@ -9,6 +9,8 @@ import { EditableText } from "../shared/EditableText";
 import { SectionHeader } from "../shared/SectionHeader";
 import { MonthYearPicker } from "../shared/MonthYearPicker";
 import { DeleteButton } from "../shared/DeleteButton";
+import { SortableItemList } from "../draggable/SortableItemList";
+import { DraggableItem } from "../draggable/DraggableItem";
 
 interface ExperienceSectionProps {
   section: Section;
@@ -20,6 +22,9 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
   const addSectionItem = useReyzumeStore((state) => state.addSectionItem);
   const updateSectionItem = useReyzumeStore((state) => state.updateSectionItem);
   const removeSectionItem = useReyzumeStore((state) => state.removeSectionItem);
+  const reorderSectionItems = useReyzumeStore(
+    (state) => state.reorderSectionItems
+  );
 
   const canDelete = content.items.length > 1;
 
@@ -30,12 +35,16 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
           <h2 className="text-xl font-semibold">Experience</h2>
         </div>
       </SectionHeader>
-      <div className="space-y-4">
+      <SortableItemList
+        items={content.items}
+        onReorder={(items) => reorderSectionItems(section.id, items)}
+        className="space-y-4"
+      >
         {content.items.map((item) => (
-          <div key={item.id} className="space-y-1 group/item">
+          <DraggableItem key={item.id} id={item.id} className="space-y-1">
             {/* Title and Location */}
             <div className="flex justify-between items-baseline gap-4">
-              <div className=" flex gap-1 ">
+              <div className="flex gap-1">
                 <EditableText
                   value={item.title}
                   onChange={(val) =>
@@ -47,7 +56,7 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
                 {canDelete && (
                   <DeleteButton
                     onDelete={() => removeSectionItem(section.id, item.id)}
-                    itemName="section item"
+                    itemName="entry"
                     className="opacity-0 group-hover/item:opacity-100 transition-opacity"
                   />
                 )}
@@ -80,14 +89,6 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
                   placeholder="Start"
                   className="text-sm"
                 />
-                {/* <EditableText
-                  value={item.startDate || ""}
-                  onChange={(val) =>
-                    updateSectionItem(section.id, item.id, { startDate: val })
-                  }
-                  className="w-auto max-w-[70px] text-right text-sm"
-                  placeholder="Start Date"
-                /> */}
                 <span>-</span>
                 <MonthYearPicker
                   value={item.endDate || ""}
@@ -98,14 +99,6 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
                   className="text-sm"
                   allowPresent
                 />
-                {/* <EditableText
-                  value={item.endDate || ""}
-                  onChange={(val) =>
-                    updateSectionItem(section.id, item.id, { endDate: val })
-                  }
-                  className="w-auto max-w-[70px] text-sm"
-                  placeholder="End Date"
-                /> */}
               </div>
             </div>
             {/* Description */}
@@ -118,9 +111,9 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
               placeholder="• Achieved X by doing Y\n• Led a team of Z people"
               multiline
             />
-          </div>
+          </DraggableItem>
         ))}
-      </div>
+      </SortableItemList>
     </div>
   );
 }

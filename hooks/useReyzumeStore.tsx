@@ -155,6 +155,7 @@ interface ReyzumeStore {
     itemId: string,
     content: Record<string, unknown>
   ) => void;
+  reorderSectionItems: (sectionId: string, items: { id: string }[]) => void;
 }
 // Helper to generate IDs that works in non-secure contexts (like mobile dev)
 function generateId() {
@@ -428,7 +429,26 @@ export const useReyzumeStore = create<ReyzumeStore>()(
           }),
           isDirty: true,
         })),
+      reorderSectionItems: (sectionId, newItems) =>
+        set((state) => ({
+          sections: state.sections.map((s) => {
+            if (s.id !== sectionId) return s;
+
+            const sectionContent = s.content as { items: { id: string }[] };
+            if (!sectionContent.items) return s;
+
+            return {
+              ...s,
+              content: {
+                ...sectionContent,
+                items: newItems,
+              } as SectionContent,
+            };
+          }),
+          isDirty: true,
+        })),
     }),
+
     { name: "ReyzumeStore" }
   )
 );
