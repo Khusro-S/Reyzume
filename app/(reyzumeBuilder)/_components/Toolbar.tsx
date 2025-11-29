@@ -1,5 +1,6 @@
 "use client";
 import AddSection from "./toolbarButtons/AddSection";
+import BulletPoint from "./toolbarButtons/BulletPoint";
 import FontSelector from "./toolbarButtons/FontSelector";
 import FontSize from "./toolbarButtons/FontSize";
 import Hyperlink from "./toolbarButtons/Hyperlink";
@@ -16,6 +17,7 @@ export default function Toolbar() {
       <FontSelector />
       <FontSize />
       <TextFormatting />
+      <BulletPoint />
       <Hyperlink />
     </div>
   );

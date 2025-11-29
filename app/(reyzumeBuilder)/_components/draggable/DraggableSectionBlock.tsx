@@ -40,13 +40,13 @@ export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
       style={style}
       //   className="relative group border border-transparent hover:border-border rounded-lg p-3 transition-all print:break-inside-avoid"
       className={cn(
-        "relative group border border-transparent hover:border-border rounded-lg p-3 transition-all print:break-inside-avoid",
+        "relative group border border-transparent hover:border-border print:border-transparent rounded-lg p-3 transition-all print:break-inside-avoid",
         !section.isVisible && "opacity-50"
       )}
     >
       {/* Drag handle */}
       <button
-        className="absolute -left-4 md:-left-5 top-3 cursor-grab active:cursor-grabbing opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity touch-none select-none"
+        className="absolute -left-4 md:-left-5 top-3 cursor-grab active:cursor-grabbing opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity touch-none select-none print:hidden"
         {...attributes}
         {...listeners}
       >

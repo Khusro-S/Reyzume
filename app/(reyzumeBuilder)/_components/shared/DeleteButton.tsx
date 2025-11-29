@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 interface DeleteButtonProps {
   onDelete: () => void;
@@ -42,7 +43,11 @@ export function DeleteButton({
       <Button
         variant="ghost"
         size="sm"
-        className={`${buttonSize} p-0 hover:bg-destructive/10 ${className}`}
+        className={cn(
+          "p-0 hover:bg-destructive/10 print:hidden",
+          buttonSize,
+          className
+        )}
         onClick={onDelete}
         title={`Delete ${itemName}`}
       >
@@ -58,7 +63,11 @@ export function DeleteButton({
         <Button
           variant="ghost"
           size="sm"
-          className={`${buttonSize} p-0 hover:bg-destructive/10 ${className}`}
+          className={cn(
+            "p-0 hover:bg-destructive/10 print:hidden",
+            buttonSize,
+            className
+          )}
           title={`Delete ${itemName}`}
         >
           <Trash2 className={`${iconSize} text-destructive`} />

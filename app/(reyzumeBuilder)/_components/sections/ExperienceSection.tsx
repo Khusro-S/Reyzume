@@ -7,10 +7,10 @@ import {
 } from "@/hooks/useReyzumeStore";
 import { EditableText } from "../shared/EditableText";
 import { SectionHeader } from "../shared/SectionHeader";
-import { MonthYearPicker } from "../shared/MonthYearPicker";
 import { DeleteButton } from "../shared/DeleteButton";
 import { SortableItemList } from "../draggable/SortableItemList";
 import { DraggableItem } from "../draggable/DraggableItem";
+import { DateRangePicker } from "../shared/DateRangePicker";
 
 interface ExperienceSectionProps {
   section: Section;
@@ -57,7 +57,7 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
                   <DeleteButton
                     onDelete={() => removeSectionItem(section.id, item.id)}
                     itemName="entry"
-                    className="opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    className="md:opacity-0 md:group-hover/item:opacity-100 transition-opacity"
                   />
                 )}
               </div>
@@ -80,26 +80,22 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
                 className="text-sm font-medium text-muted-foreground"
                 placeholder="Company Name"
               />
-              <div className="flex gap-1 shrink-0 text-sm text-muted-foreground whitespace-nowrap">
-                <MonthYearPicker
-                  value={item.startDate || ""}
-                  onChange={(val) =>
-                    updateSectionItem(section.id, item.id, { startDate: val })
-                  }
-                  placeholder="Start"
-                  className="text-sm"
-                />
-                <span>-</span>
-                <MonthYearPicker
-                  value={item.endDate || ""}
-                  onChange={(val) =>
-                    updateSectionItem(section.id, item.id, { endDate: val })
-                  }
-                  placeholder="End"
-                  className="text-sm"
-                  allowPresent
-                />
-              </div>
+              <DateRangePicker
+                startDate={item.startDate}
+                endDate={item.endDate}
+                onStartDateChange={(val) =>
+                  updateSectionItem(section.id, item.id, { startDate: val })
+                }
+                onEndDateChange={(val) =>
+                  updateSectionItem(section.id, item.id, { endDate: val })
+                }
+                onDelete={() =>
+                  updateSectionItem(section.id, item.id, {
+                    startDate: undefined,
+                    endDate: undefined,
+                  })
+                }
+              />
             </div>
             {/* Description */}
             <EditableText

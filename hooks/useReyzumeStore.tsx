@@ -31,8 +31,8 @@ export interface ExperienceItem {
   title: string;
   company: string;
   location: string;
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
   current: boolean;
   description: string;
 }
@@ -46,8 +46,8 @@ export interface EducationItem {
   degree: string;
   school: string;
   location: string;
-  startDate: string;
-  graduationDate: string;
+  startDate?: string;
+  endDate?: string;
   current: boolean;
   description?: string;
 }
@@ -83,7 +83,7 @@ export interface CertificationItem {
   id: string;
   name: string;
   issuer: string;
-  date: string;
+  date?: string;
   url?: string;
 }
 

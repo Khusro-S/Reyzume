@@ -10,7 +10,7 @@ import { SectionHeader } from "../shared/SectionHeader";
 import { DeleteButton } from "../shared/DeleteButton";
 import { SortableItemList } from "../draggable/SortableItemList";
 import { DraggableItem } from "../draggable/DraggableItem";
-import { MonthYearPicker } from "../shared/MonthYearPicker";
+import { SingleDatePicker } from "../shared/SingleDatePicker";
 
 interface CertificationsSectionProps {
   section: Section;
@@ -59,7 +59,7 @@ export function CertificationsSection({ section }: CertificationsSectionProps) {
                   <DeleteButton
                     onDelete={() => removeSectionItem(section.id, item.id)}
                     itemName="section item"
-                    className="opacity-0 group-hover/item:opacity-100 transition-opacity"
+                    className="md:opacity-0 md:group-hover/item:opacity-100 transition-opacity"
                   />
                 )}
               </div>
@@ -80,13 +80,15 @@ export function CertificationsSection({ section }: CertificationsSectionProps) {
               className="text-sm text-muted-foreground w-20 text-right"
               placeholder="MM/YYYY"
             /> */}
-            <MonthYearPicker
-              value={item.date || ""}
+            <SingleDatePicker
+              date={item.date}
               onChange={(val) =>
                 updateSectionItem(section.id, item.id, { date: val })
               }
+              onDelete={() =>
+                updateSectionItem(section.id, item.id, { date: undefined })
+              }
               placeholder="Issued Date"
-              className="text-sm"
             />
           </DraggableItem>
         ))}

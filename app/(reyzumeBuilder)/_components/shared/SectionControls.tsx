@@ -27,7 +27,7 @@ export function SectionControls({
     sectionType.charAt(0).toUpperCase() + sectionType.slice(1);
 
   return (
-    <div className="absolute right-1 top-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+    <div className="absolute right-1 top-3 flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity print:hidden">
       {/* Toggle visibility */}
       <Button
         variant="ghost"

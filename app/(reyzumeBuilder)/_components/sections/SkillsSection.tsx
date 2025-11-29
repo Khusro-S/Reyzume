@@ -69,7 +69,7 @@ export function SkillsSection({ section }: SkillsSectionProps) {
               <DeleteButton
                 onDelete={() => removeSectionItem(section.id, category.id)}
                 itemName="entry"
-                className="opacity-0 group-hover/item:opacity-100 transition-opacity"
+                className="md:opacity-0 md:group-hover/item:opacity-100 transition-opacity"
               />
             )}
           </DraggableItem>

@@ -43,7 +43,7 @@ export function DraggableItem({ id, children, className }: DraggableItemProps) {
         {...attributes}
         {...listeners}
       >
-        <GripVertical className="md:h-4 md:w-4 h-5 w-5 text-muted-foreground" />
+        <GripVertical className="md:h-4 md:w-4 h-5 w-5 text-muted-foreground print:hidden" />
       </button>
       {children}
     </div>
