@@ -46,13 +46,13 @@ export function CertificationsSection({ section }: CertificationsSectionProps) {
             className="flex justify-between items-baseline gap-4 group/item"
           >
             <div className="flex-1 space-y-0.5">
-              <div className="flex gap-1">
+              <div className="flex gap-1 flex-1 min-w-0">
                 <EditableText
                   value={item.name}
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, { name: val })
                   }
-                  className="font-semibold w-1/2"
+                  className="font-semibold"
                   placeholder="Certification Name"
                 />
                 {canDelete && (

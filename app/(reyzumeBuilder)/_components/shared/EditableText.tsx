@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { RichTextEditor } from "./RichTextEditor";
 
 interface EditableTextProps {
   value: string;
@@ -8,6 +8,7 @@ interface EditableTextProps {
   className?: string;
   placeholder?: string;
   multiline?: boolean;
+  maxLength?: number;
 }
 
 export function EditableText({
@@ -16,35 +17,16 @@ export function EditableText({
   className,
   placeholder,
   multiline = false,
+  maxLength,
 }: EditableTextProps) {
-  if (multiline) {
-    return (
-      <textarea
-        value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className={cn(
-          "w-full bg-transparent outline-none resize-none overflow-hidden min-h-[1.5em] placeholder:text-muted-foreground/50 border-none shadow-none focus-visible:ring-transparent text-base",
-          className
-        )}
-        rows={1}
-        onInput={(e) => {
-          e.currentTarget.style.height = "auto";
-          e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
-        }}
-      />
-    );
-  }
   return (
-    <input
-      type="text"
-      value={value || ""}
-      onChange={(e) => onChange(e.target.value)}
+    <RichTextEditor
+      value={value}
+      onChange={onChange}
       placeholder={placeholder}
-      className={cn(
-        "w-full bg-transparent outline-none shadow-none focus-visible:ring-transparent placeholder:text-muted-foreground/50 text-base",
-        className
-      )}
+      className={className}
+      singleLine={!multiline}
+      maxLength={!multiline && !maxLength ? 100 : maxLength || undefined}
     />
   );
 }

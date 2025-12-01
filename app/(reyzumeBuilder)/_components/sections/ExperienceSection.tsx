@@ -42,60 +42,67 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
       >
         {content.items.map((item) => (
           <DraggableItem key={item.id} id={item.id} className="space-y-1">
-            {/* Title and Location */}
+            {/* company name and Location */}
             <div className="flex justify-between items-baseline gap-4">
-              <div className="flex gap-1">
+              <div className="flex gap-1 min-w-0 flex-1">
                 <EditableText
                   value={item.title}
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, { title: val })
                   }
                   className="font-semibold"
-                  placeholder="Job Title"
+                  placeholder="Company Name"
                 />
                 {canDelete && (
                   <DeleteButton
                     onDelete={() => removeSectionItem(section.id, item.id)}
-                    itemName="entry"
+                    itemName="section item"
                     className="md:opacity-0 md:group-hover/item:opacity-100 transition-opacity"
                   />
                 )}
               </div>
-              <EditableText
-                value={item.location}
-                onChange={(val) =>
-                  updateSectionItem(section.id, item.id, { location: val })
-                }
-                className="text-right text-sm"
-                placeholder="City, Country"
-              />
+              <div className="shrink-0">
+                <EditableText
+                  value={item.location}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, { location: val })
+                  }
+                  className="text-right text-sm"
+                  placeholder="City, Country"
+                />
+              </div>
             </div>
-            {/* Company and Dates */}
+            {/* job title and Dates */}
             <div className="flex justify-between items-baseline gap-4">
-              <EditableText
-                value={item.company}
-                onChange={(val) =>
-                  updateSectionItem(section.id, item.id, { company: val })
-                }
-                className="text-sm font-medium text-muted-foreground"
-                placeholder="Company Name"
-              />
-              <DateRangePicker
-                startDate={item.startDate}
-                endDate={item.endDate}
-                onStartDateChange={(val) =>
-                  updateSectionItem(section.id, item.id, { startDate: val })
-                }
-                onEndDateChange={(val) =>
-                  updateSectionItem(section.id, item.id, { endDate: val })
-                }
-                onDelete={() =>
-                  updateSectionItem(section.id, item.id, {
-                    startDate: undefined,
-                    endDate: undefined,
-                  })
-                }
-              />
+              <div className="min-w-0 flex-1">
+                <EditableText
+                  value={item.company}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, { company: val })
+                  }
+                  className="text-sm font-medium text-muted-foreground"
+                  placeholder="Job Title"
+                  maxLength={79}
+                />
+              </div>
+              <div className="shrink-0">
+                <DateRangePicker
+                  startDate={item.startDate}
+                  endDate={item.endDate}
+                  onStartDateChange={(val) =>
+                    updateSectionItem(section.id, item.id, { startDate: val })
+                  }
+                  onEndDateChange={(val) =>
+                    updateSectionItem(section.id, item.id, { endDate: val })
+                  }
+                  onDelete={() =>
+                    updateSectionItem(section.id, item.id, {
+                      startDate: undefined,
+                      endDate: undefined,
+                    })
+                  }
+                />
+              </div>
             </div>
             {/* Description */}
             <EditableText

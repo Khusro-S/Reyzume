@@ -80,7 +80,7 @@ export function CustomSection({ section }: CustomSectionProps) {
           >
             {/* Title and Dates */}
             <div className="flex justify-between items-baseline gap-4">
-              <div className="flex gap-1">
+              <div className="flex gap-1 min-w-0 flex-1">
                 <EditableText
                   value={item.title}
                   onChange={(val) =>
@@ -97,22 +97,24 @@ export function CustomSection({ section }: CustomSectionProps) {
                   />
                 )}
               </div>
-              <DateRangePicker
-                startDate={item.startDate}
-                endDate={item.endDate}
-                onStartDateChange={(val) =>
-                  updateSectionItem(section.id, item.id, { startDate: val })
-                }
-                onEndDateChange={(val) =>
-                  updateSectionItem(section.id, item.id, { endDate: val })
-                }
-                onDelete={() =>
-                  updateSectionItem(section.id, item.id, {
-                    startDate: undefined,
-                    endDate: undefined,
-                  })
-                }
-              />
+              <div className="shrink-0">
+                <DateRangePicker
+                  startDate={item.startDate}
+                  endDate={item.endDate}
+                  onStartDateChange={(val) =>
+                    updateSectionItem(section.id, item.id, { startDate: val })
+                  }
+                  onEndDateChange={(val) =>
+                    updateSectionItem(section.id, item.id, { endDate: val })
+                  }
+                  onDelete={() =>
+                    updateSectionItem(section.id, item.id, {
+                      startDate: undefined,
+                      endDate: undefined,
+                    })
+                  }
+                />
+              </div>
             </div>
             {/* Subtitle */}
             <EditableText

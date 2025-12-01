@@ -47,7 +47,7 @@ export function EducationSection({ section }: EducationSectionProps) {
           >
             {/* School and Location */}
             <div className="flex justify-between items-baseline gap-4">
-              <div className="flex gap-1">
+              <div className="flex gap-1 min-w-0 flex-1">
                 <EditableText
                   value={item.school}
                   onChange={(val) =>
@@ -64,14 +64,16 @@ export function EducationSection({ section }: EducationSectionProps) {
                   />
                 )}
               </div>
-              <EditableText
-                value={item.location}
-                onChange={(val) =>
-                  updateSectionItem(section.id, item.id, { location: val })
-                }
-                className="text-sm text-muted-foreground text-right"
-                placeholder="City, Country"
-              />
+              <div className="shrink-0">
+                <EditableText
+                  value={item.location}
+                  onChange={(val) =>
+                    updateSectionItem(section.id, item.id, { location: val })
+                  }
+                  className="text-sm text-muted-foreground text-right"
+                  placeholder="City, Country"
+                />
+              </div>
             </div>
             {/* Degree and Dates */}
             <div className="flex justify-between items-baseline gap-4">

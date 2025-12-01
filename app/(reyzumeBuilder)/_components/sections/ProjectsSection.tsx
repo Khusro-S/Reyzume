@@ -47,7 +47,7 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
           >
             {/* Project Name and Dates */}
             <div className="flex justify-between items-baseline gap-4">
-              <div className="flex gap-1">
+              <div className="flex gap-1 min-w-0 flex-1">
                 <EditableText
                   value={item.name}
                   onChange={(val) =>

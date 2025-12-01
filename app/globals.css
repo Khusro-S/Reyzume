@@ -175,3 +175,19 @@ h6 {
     display: none;
   }
 }
+/* TipTap placeholder styles */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: color-mix(in oklch, var(--muted-foreground) 50%, transparent);
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror.is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: color-mix(in oklch, var(--muted-foreground) 50%, transparent);
+  pointer-events: none;
+  height: 0;
+}

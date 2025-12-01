@@ -42,9 +42,9 @@ export function SkillsSection({ section }: SkillsSectionProps) {
           <DraggableItem
             key={category.id}
             id={category.id}
-            className="flex items-center justify-center gap-2"
+            className="flex gap-2"
           >
-            <div className="flex justify-center items-center max-w-[120px]">
+            <div className="flex justify-center items-baseline w-1/4 flex-1">
               <EditableText
                 value={category.label}
                 onChange={(val) =>
@@ -52,9 +52,9 @@ export function SkillsSection({ section }: SkillsSectionProps) {
                 }
                 className="font-semibold text-sm whitespace-pre-line mt-1 w-full"
                 placeholder="Skills"
-                multiline
+                maxLength={50}
               />
-              <span className="font-semibold text-sm">:</span>
+              <span className="font-semibold text-sm ml-1">:</span>
             </div>
             <EditableText
               value={category.skills || ""}
