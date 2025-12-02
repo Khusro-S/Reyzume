@@ -19,36 +19,43 @@ export function SectionControls({
   onDelete,
   canDelete = true,
 }: SectionControlsProps) {
-  // Don't allow deleting header section
-  const isDeletable = canDelete && sectionType !== "header";
+  // Don't allow deleting or hiding header section
+  const isHeader = sectionType === "header";
+  const isDeletable = canDelete && !isHeader;
+  const canToggleVisibility = !isHeader;
 
   // Format section type for display (e.g., "experience" -> "Experience")
   const formattedType =
     sectionType.charAt(0).toUpperCase() + sectionType.slice(1);
 
+  if (isHeader) {
+    return null;
+  }
   return (
     <div className="absolute right-1 top-3 flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity print:hidden">
       {/* Toggle visibility */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-7 w-7 p-0 hover:bg-muted"
-        onClick={onToggleVisibility}
-        title={isVisible ? `Hide ${formattedType}` : `Show ${formattedType}`}
-      >
-        {isVisible ? (
-          <Eye className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <EyeOff className="h-4 w-4 text-muted-foreground" />
-        )}
-      </Button>
+      {canToggleVisibility && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 hover:bg-muted"
+          onClick={onToggleVisibility}
+          title={isVisible ? `Hide ${formattedType}` : `Show ${formattedType}`}
+        >
+          {isVisible ? (
+            <Eye className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <EyeOff className="h-4 w-4 text-muted-foreground" />
+          )}
+        </Button>
+      )}
 
       {/* Delete section */}
       {isDeletable && (
         <DeleteButton
           onDelete={onDelete}
           itemName={`${formattedType} section`}
-          showConfirmation={true}
+          // showConfirmation={true}
           disabled={!isDeletable}
           size="default"
         />

@@ -68,7 +68,7 @@ export function CertificationsSection({ section }: CertificationsSectionProps) {
                 onChange={(val) =>
                   updateSectionItem(section.id, item.id, { issuer: val })
                 }
-                className="text-sm text-muted-foreground"
+                className="text-muted-foreground"
                 placeholder="Issuer"
               />
             </div>

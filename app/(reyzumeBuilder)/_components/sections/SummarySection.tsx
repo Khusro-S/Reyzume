@@ -22,7 +22,8 @@ export function SummarySection({ section }: SummarySectionProps) {
       <EditableText
         value={content.text}
         onChange={(val) => updateSection(section.id, { text: val })}
-        className="text-sm"
+        // className="text-sm"
+        // style={{fontSize: }}
         placeholder="Add your professional summary..."
         multiline
       />

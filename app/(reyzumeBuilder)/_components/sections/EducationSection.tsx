@@ -70,7 +70,8 @@ export function EducationSection({ section }: EducationSectionProps) {
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, { location: val })
                   }
-                  className="text-sm text-muted-foreground text-right"
+                  className="text-muted-foreground text-right"
+                  style={{ fontSize: "0.9em" }}
                   placeholder="City, Country"
                 />
               </div>
@@ -82,7 +83,8 @@ export function EducationSection({ section }: EducationSectionProps) {
                 onChange={(val) =>
                   updateSectionItem(section.id, item.id, { degree: val })
                 }
-                className="text-sm font-medium"
+                className="font-medium"
+                style={{ fontSize: "0.9em" }}
                 placeholder="Degree"
               />
               <DateRangePicker
@@ -108,7 +110,7 @@ export function EducationSection({ section }: EducationSectionProps) {
               onChange={(val) =>
                 updateSectionItem(section.id, item.id, { description: val })
               }
-              className="text-sm whitespace-pre-line mt-1"
+              className="whitespace-pre-line mt-1"
               placeholder="Relevant coursework: ..."
               multiline
             />

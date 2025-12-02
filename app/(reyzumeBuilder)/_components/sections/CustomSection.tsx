@@ -42,29 +42,17 @@ export function CustomSection({ section }: CustomSectionProps) {
   return (
     <div>
       <SectionHeader onAdd={() => addSectionItem(section.id)}>
-        <div className="flex items-center gap-2 group/title">
-          {isEditingTitle ? (
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="text-lg font-semibold bg-transparent outline-none border-b border-primary"
-              autoFocus
-              onBlur={handleTitleSave}
-              onKeyDown={(e) => e.key === "Enter" && handleTitleSave()}
-            />
-          ) : (
-            <>
-              <h2 className="text-lg font-semibold">{content.title}</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-5 w-5 p-0 opacity-0 group-hover/title:opacity-100 transition-opacity"
-                onClick={() => setIsEditingTitle(true)}
-              >
-                <Pencil className="h-3 w-3" />
-              </Button>
-            </>
-          )}
+        {/* <div className="flex items-center gap-2 group/title"> */}
+        <div className="shrink-0">
+          <EditableText
+            value={content.title}
+            onChange={(val) => updateSection(section.id, { title: val })}
+            className="font-semibold"
+            style={{ fontSize: "1.15em" }}
+            selectAllOnFocus
+            placeholder="Custom Title"
+            maxLength={40}
+          />
         </div>
       </SectionHeader>
       <SortableItemList
@@ -122,7 +110,7 @@ export function CustomSection({ section }: CustomSectionProps) {
               onChange={(val) =>
                 updateSectionItem(section.id, item.id, { subtitle: val })
               }
-              className="text-sm font-medium text-muted-foreground"
+              className="font-medium text-muted-foreground"
               placeholder="Subtitle"
             />
             {/* Description */}
@@ -131,7 +119,7 @@ export function CustomSection({ section }: CustomSectionProps) {
               onChange={(val) =>
                 updateSectionItem(section.id, item.id, { description: val })
               }
-              className="text-sm whitespace-pre-line mt-1"
+              className="whitespace-pre-line"
               placeholder="Description..."
               multiline
             />

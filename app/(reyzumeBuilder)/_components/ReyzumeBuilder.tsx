@@ -27,31 +27,41 @@ import { HiddenSectionsPanel } from "./sections/HiddenSectionsPanel";
 import { useParams } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import { useReyzumeSync } from "@/hooks/useReyzumeSync";
-import { Check, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { DEFAULT_ZOOM, useZoomStore } from "@/hooks/useZoomStore";
+import { getFontByValue, getFontSizeByValue } from "@/lib/fonts";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  return isMobile;
+};
 
 export default function ReyzumeBuilder() {
   const params = useParams();
   const reyzumeId = params.reyzumeId as Id<"reyzumes">;
 
-  const { isLoading, isSaving } = useReyzumeSync(reyzumeId);
+  const { isLoading } = useReyzumeSync(reyzumeId);
   // const { isLoading } = useReyzumeSync(reyzumeId);
+  const { getZoom } = useZoomStore();
+  const storedZoom = getZoom(reyzumeId);
+  const isMobile = useIsMobile();
 
+  const zoom = isMobile ? DEFAULT_ZOOM : storedZoom;
   const { reorderSections, visibleSections } = useReyzumeSections();
 
-  const [showSaved, setShowSaved] = useState(false);
-
-  // Show "Saved" for 2 seconds after saving completes
-  useEffect(() => {
-    if (isSaving) return;
-
-    // When isSaving becomes false, show "Saved"
-    const showTimer = setTimeout(() => setShowSaved(true), 0);
-    const hideTimer = setTimeout(() => setShowSaved(false), 2000);
-    return () => {
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
-    };
-  }, [isSaving]);
+  const reyzume = useQuery(api.reyzumes.getReyzumeById, { id: reyzumeId });
+  const fontFamily = getFontByValue(reyzume?.fontFamily).value;
+  const fontSize = getFontSizeByValue(reyzume?.fontSize).value;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -63,12 +73,6 @@ export default function ReyzumeBuilder() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-  // const sensors = useSensors(
-  //   useSensor(PointerSensor),
-  //   useSensor(KeyboardSensor, {
-  //     coordinateGetter: sortableKeyboardCoordinates,
-  //   })
-  // );
 
   // const { visibleSections, reorderSections } = useReyzumeSections();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -130,90 +134,69 @@ export default function ReyzumeBuilder() {
       </div>
     );
   }
-  // const handleDragEnd = (event: DragEndEvent) => {
-  //   const { active, over } = event;
-
-  //   if (over && active.id !== over.id) {
-  //     const oldIndex = draggableSections.findIndex((s) => s.id === active.id);
-  //     const newIndex = draggableSections.findIndex((s) => s.id === over.id);
-  //     const reorderedDraggable = arrayMove(
-  //       draggableSections,
-  //       oldIndex,
-  //       newIndex
-  //     );
-
-  //     // Combine fixed and reordered draggable sections to update all orders
-  //     const newSections = [...fixedSections, ...reorderedDraggable].map(
-  //       (section, index) => ({
-  //         ...section,
-  //         order: index,
-  //       })
-  //     );
-  //     reorderSections(newSections);
-  //   }
-  // };
-
+  const scale = zoom / 100;
+  // Calculate scaled dimensions for the wrapper
+  // const scaledWidth = `calc(210mm * ${scale})`;
+  const scaledHeight = `calc(${containerHeight} * ${scale})`;
   return (
-    <div className="flex justify-center pb-20">
+    <div className="flex pb-20 w-full justify-center items-center">
       <div
-        className="w-[210mm] max-w-[92vw] bg-white rounded-xl shadow-lg print:shadow-none print:max-w-none origin-top transition-transform duration-200 p-[5mm]"
+        className="transition-all duration-200 ease-out"
         style={{
-          height: containerHeight,
-          // Visual page break marker every 297mm (A4 height)
-          backgroundImage:
-            "linear-gradient(to bottom, transparent calc(297mm - 1px), #e5e7eb calc(297mm - 1px), #e5e7eb 297mm)",
-          backgroundSize: "100% 297mm",
+          // height: `calc(${containerHeight} * ${scale})`,
+          // width: scaledWidth,
+          height: scaledHeight,
         }}
       >
-        <div className="fixed top-20 right-2 md:right-4 text-xl text-muted-foreground print:hidden z-100">
-          {isSaving && (
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Saving...
-            </div>
-          )}
-          {showSaved && !isSaving && (
-            <div className="flex items-center gap-1 text-sm text-green-400">
-              <Check className="h-4 w-4" />
-              Saved
-            </div>
-          )}
-        </div>
-        <div className="space-y-2" ref={contentRef}>
-          {/* Fixed Sections (Header, Summary) */}
-          {fixedSections.map((section) => (
-            <SectionBlock
-              key={section.id}
-              section={section}
-              isDraggable={false}
-            />
-          ))}
+        <div
+          className="w-[210mm] max-w-[92vw] bg-white rounded-xl shadow-lg print:shadow-none print:max-w-none origin-top transition-transform duration-200 p-[5mm]"
+          style={{
+            height: containerHeight,
+            transform: `scale(${scale})`,
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+            // Visual page break marker every 297mm (A4 height)
+            backgroundImage:
+              "linear-gradient(to bottom, transparent calc(297mm - 1px), #e5e7eb calc(297mm - 1px), #e5e7eb 297mm)",
+            backgroundSize: "100% 297mm",
+          }}
+        >
+          <div className="space-y-2" ref={contentRef}>
+            {/* Fixed Sections (Header, Summary) */}
+            {fixedSections.map((section) => (
+              <SectionBlock
+                key={section.id}
+                section={section}
+                isDraggable={false}
+              />
+            ))}
 
-          {/* Draggable Sections */}
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-            modifiers={[
-              restrictToVerticalAxis,
-              restrictToParentElement,
-              restrictToWindowEdges,
-            ]}
-          >
-            <SortableContext
-              items={draggableSections.map((s) => s.id)}
-              strategy={verticalListSortingStrategy}
+            {/* Draggable Sections */}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+              modifiers={[
+                restrictToVerticalAxis,
+                restrictToParentElement,
+                restrictToWindowEdges,
+              ]}
             >
-              <div className="space-y-2">
-                {draggableSections.map((section) => (
-                  <SectionBlock key={section.id} section={section} />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+              <SortableContext
+                items={draggableSections.map((s) => s.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-2">
+                  {draggableSections.map((section) => (
+                    <SectionBlock key={section.id} section={section} />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </div>
         </div>
+        <HiddenSectionsPanel />
       </div>
-      <HiddenSectionsPanel />
     </div>
   );
 }

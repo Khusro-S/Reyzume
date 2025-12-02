@@ -30,11 +30,15 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
 
   return (
     <div>
-      <SectionHeader onAdd={() => addSectionItem(section.id)}>
-        <div className="flex items-center gap-2 group/title">
-          <h2 className="text-xl font-semibold">Experience</h2>
-        </div>
+      <SectionHeader
+        title="Experience"
+        onAdd={() => addSectionItem(section.id)}
+      >
+        {/* <div className="flex items-center gap-2 group/title"> */}
+        {/* <h2 className="font-semibold">Experience</h2> */}
+        {/* </div> */}
       </SectionHeader>
+
       <SortableItemList
         items={content.items}
         onReorder={(items) => reorderSectionItems(section.id, items)}
@@ -43,7 +47,7 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
         {content.items.map((item) => (
           <DraggableItem key={item.id} id={item.id} className="space-y-1">
             {/* company name and Location */}
-            <div className="flex justify-between items-baseline gap-4">
+            <div className="flex justify-between items-baseline gap-4 m-0">
               <div className="flex gap-1 min-w-0 flex-1">
                 <EditableText
                   value={item.title}
@@ -67,7 +71,8 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, { location: val })
                   }
-                  className="text-right text-sm"
+                  className="text-right"
+                  style={{ fontSize: "0.9em" }}
                   placeholder="City, Country"
                 />
               </div>
@@ -80,7 +85,8 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
                   onChange={(val) =>
                     updateSectionItem(section.id, item.id, { company: val })
                   }
-                  className="text-sm font-medium text-muted-foreground"
+                  className="font-medium text-muted-foreground"
+                  style={{ fontSize: "0.9em" }}
                   placeholder="Job Title"
                   maxLength={79}
                 />
@@ -110,8 +116,8 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
               onChange={(val) =>
                 updateSectionItem(section.id, item.id, { description: val })
               }
-              className="text-sm whitespace-pre-line mt-1"
-              placeholder="• Achieved X by doing Y\n• Led a team of Z people"
+              className="whitespace-pre-line"
+              placeholder={`• Achieved X by doing Y\n• Led a team of Z people`}
               multiline
             />
           </DraggableItem>

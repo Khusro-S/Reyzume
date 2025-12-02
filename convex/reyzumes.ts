@@ -21,6 +21,8 @@ export const createReyzume = mutation({
       content: "",
       isArchived: false,
       isPublished: false,
+      fontFamily: "Times New Roman, Times, serif",
+      fontSize: "11pt",
     });
 
     return resumeId;
@@ -284,5 +286,56 @@ export const getArchivedReyzumes = query({
       .collect();
 
     return archivedReyzumes;
+  },
+});
+
+export const updateFontFamily = mutation({
+  args: {
+    id: v.id("reyzumes"),
+    fontFamily: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authorized");
+    }
+
+    const existingReyzume = await ctx.db.get(args.id);
+    if (!existingReyzume) {
+      throw new Error("Reyzume not found");
+    }
+    await ctx.db.patch(args.id, {
+      fontFamily: args.fontFamily,
+      updatedAt: Date.now(),
+    });
+    return { success: true };
+  },
+});
+
+export const updateFontSize = mutation({
+  args: {
+    id: v.id("reyzumes"),
+    fontSize: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authorized");
+    }
+
+    const existingReyzume = await ctx.db.get(args.id);
+    if (!existingReyzume) {
+      throw new Error("Reyzume not found");
+    }
+
+    if (existingReyzume.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.id, {
+      fontSize: args.fontSize,
+      updatedAt: Date.now(),
+    });
+    return { success: true };
   },
 });

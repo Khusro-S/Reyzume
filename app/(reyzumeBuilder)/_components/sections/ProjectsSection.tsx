@@ -87,8 +87,10 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
               onChange={(val) =>
                 updateSectionItem(section.id, item.id, { url: val })
               }
-              className="text-sm text-blue-600 hover:underline"
-              placeholder="https://project-url.com"
+              // className="text-blue-600 hover:underline"
+              // style={{}}
+              // placeholder="https://project-url.com"
+              placeholder="Subtitle/Link"
             />
             {/* Description */}
             <EditableText
@@ -96,7 +98,7 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
               onChange={(val) =>
                 updateSectionItem(section.id, item.id, { description: val })
               }
-              className="text-sm whitespace-pre-line mt-1"
+              className="whitespace-pre-line mt-1"
               placeholder="Project description..."
               multiline
             />

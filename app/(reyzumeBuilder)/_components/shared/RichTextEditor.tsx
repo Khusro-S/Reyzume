@@ -15,18 +15,22 @@ interface RichTextEditorProps {
   value: string;
   onChange: (val: string) => void;
   className?: string;
+  style?: React.CSSProperties;
   placeholder?: string;
   singleLine?: boolean;
   maxLength?: number;
+  selectAllOnFocus?: boolean;
 }
 
 export function RichTextEditor({
   value,
   onChange,
   className,
+  style,
   placeholder,
   singleLine = true,
   maxLength,
+  selectAllOnFocus = false,
 }: RichTextEditorProps) {
   const id = useId();
   const {
@@ -82,7 +86,7 @@ export function RichTextEditor({
         class: cn(
           "prose prose-sm max-w-none focus:outline-none min-h-[1.5em]",
           // Match existing EditableText styles
-          "text-base",
+          // "text-base",
           className
         ),
       },
@@ -182,8 +186,13 @@ export function RichTextEditor({
     },
     onFocus: () => {
       setActiveEditor(editor);
+      if (editor && selectAllOnFocus) {
+        // Defer to next tick so TipTap finishes its focus handling
+        setTimeout(() => {
+          editor.commands.selectAll();
+        }, 0);
+      }
     },
-    // Don't clear active on blur - let user click toolbar without losing selection
   });
 
   // Register editor on mount
@@ -212,6 +221,7 @@ export function RichTextEditor({
       {/* <LinkBubbleMenu editor={editor} onEdit={() => openLinkPopover?.()} /> */}
       <EditorContent
         editor={editor}
+        style={style}
         className={cn(
           "w-full overflow-hidden bg-transparent [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[1.5em]",
           // Placeholder styles

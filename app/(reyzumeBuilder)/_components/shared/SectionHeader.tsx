@@ -12,7 +12,11 @@ interface SectionHeaderProps {
 export function SectionHeader({ title, onAdd, children }: SectionHeaderProps) {
   return (
     <div className="flex items-center gap-1 justify-start mb-3 border-b-[1.5px] border-black/30">
-      {children || <h2 className="text-lg font-semibold">{title}</h2>}
+      {children || (
+        <h2 className="font-semibold" style={{ fontSize: "1.15em" }}>
+          {title}
+        </h2>
+      )}
       {onAdd && (
         <Button
           variant="ghost"

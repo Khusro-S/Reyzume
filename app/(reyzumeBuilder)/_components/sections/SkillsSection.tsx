@@ -50,18 +50,18 @@ export function SkillsSection({ section }: SkillsSectionProps) {
                 onChange={(val) =>
                   updateSectionItem(section.id, category.id, { label: val })
                 }
-                className="font-semibold text-sm whitespace-pre-line mt-1 w-full"
+                className="font-semibold whitespace-pre-line w-full"
                 placeholder="Skills"
                 maxLength={50}
               />
-              <span className="font-semibold text-sm ml-1">:</span>
+              <span className="font-semibold ml-1">:</span>
             </div>
             <EditableText
               value={category.skills || ""}
               onChange={(val) =>
                 updateSectionItem(section.id, category.id, { skills: val })
               }
-              className="text-sm whitespace-pre-line mt-1"
+              className="whitespace-pre-line"
               placeholder="Microsoft Office (Excel, Word, PowerPoint), JavaScript, React"
               multiline
             />

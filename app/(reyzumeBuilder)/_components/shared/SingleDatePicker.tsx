@@ -38,7 +38,7 @@ export function SingleDatePicker({
         onClick={() => onChange("")}
       >
         <CalendarPlus className="h-4 w-4 mr-1" />
-        <span className="text-xs">Add date</span>
+        <span style={{ fontSize: "0.8em" }}>Add date</span>
       </Button>
     );
   }
@@ -60,7 +60,7 @@ export function SingleDatePicker({
         value={date || ""}
         onChange={onChange}
         placeholder={placeholder}
-        className="text-sm text-muted-foreground"
+        className="text-muted-foreground"
         allowPresent={allowPresent}
       />
     </div>

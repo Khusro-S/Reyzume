@@ -47,7 +47,7 @@ export function DateRangePicker({
         }}
       >
         <CalendarPlus className="h-4 w-4 mr-1" />
-        <span className="text-xs">Add dates</span>
+        <span style={{ fontSize: "0.8em" }}>Add dates</span>
       </Button>
     );
   }
@@ -65,19 +65,17 @@ export function DateRangePicker({
       >
         <X className="h-3 w-3" />
       </Button>
-      <div className="flex gap-1 text-sm text-muted-foreground whitespace-nowrap items-center">
+      <div className="flex gap-1 text-muted-foreground whitespace-nowrap items-center">
         <MonthYearPicker
           value={startDate || ""}
           onChange={onStartDateChange}
           placeholder={startPlaceholder}
-          className="text-sm"
         />
         <span>-</span>
         <MonthYearPicker
           value={endDate || ""}
           onChange={onEndDateChange}
           placeholder={endPlaceholder}
-          className="text-sm"
           allowPresent={allowPresent}
         />
       </div>

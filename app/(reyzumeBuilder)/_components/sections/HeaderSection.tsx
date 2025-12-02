@@ -66,7 +66,9 @@ export function HeaderSection({ section }: HeaderSectionProps) {
         <EditableText
           value={displayName}
           onChange={(val) => handleChange("name", val)}
-          className="text-2xl md:text-3xl font-bold text-center"
+          // className="text-2xl md:text-3xl font-bold text-center"
+          className="font-bold text-center"
+          style={{ fontSize: "1.5em" }}
           placeholder="Your Name"
         />
       </div>
@@ -76,7 +78,9 @@ export function HeaderSection({ section }: HeaderSectionProps) {
           onChange={(val) =>
             handleChange("contactInfo" as keyof HeaderContent, val)
           }
-          className="text-sm text-muted-foreground text-center"
+          // className="text-sm text-muted-foreground text-center"
+          className="text-muted-foreground text-center"
+          style={{ fontSize: "0.85em" }}
           placeholder="email@example.com | (555) 123-4567 | City, Country"
         />
       </div>

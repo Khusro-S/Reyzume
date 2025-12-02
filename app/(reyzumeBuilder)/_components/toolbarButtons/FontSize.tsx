@@ -8,19 +8,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useParams } from "next/navigation";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { FONT_SIZES, getFontSizeByValue } from "@/lib/fonts";
 
-const FONT_SIZES = [
-  { label: "Small", value: "text-sm", size: "10pt" },
-  { label: "Normal", value: "text-base", size: "11pt" },
-  { label: "Medium", value: "text-lg", size: "12pt" },
-  { label: "Large", value: "text-xl", size: "14pt" },
-] as const;
+type FontSizeType = (typeof FONT_SIZES)[number];
 
 export default function FontSize() {
-  const [selectedSize, setSelectedSize] = useState<(typeof FONT_SIZES)[number]>(
-    FONT_SIZES[1]
-  ); // Default to Normal
+  const params = useParams();
+  const reyzumeId = params.reyzumeId as Id<"reyzumes">;
+
+  const reyzume = useQuery(api.reyzumes.getReyzumeById, { id: reyzumeId });
+  const updateFontSize = useMutation(api.reyzumes.updateFontSize);
+
+  const selectedSize = getFontSizeByValue(reyzume?.fontSize);
+
+  const handleSizeChange = async (size: FontSizeType) => {
+    await updateFontSize({
+      id: reyzumeId,
+      fontSize: size.value,
+    });
+  };
 
   return (
     <DropdownMenu>
@@ -30,19 +40,21 @@ export default function FontSize() {
           size="sm"
           className="h-9 gap-2 hover:bg-accent"
         >
-          <span className="text-sm font-medium">{selectedSize.size}</span>
+          <span className="text-sm font-medium">{selectedSize.value}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-34">
         {FONT_SIZES.map((size) => (
           <DropdownMenuItem
             key={size.value}
-            onClick={() => setSelectedSize(size)}
+            onClick={() => handleSizeChange(size)}
             className="cursor-pointer"
           >
             <div className="flex items-center justify-between w-full">
               <span className="text-sm">{size.label}</span>
-              <span className="text-xs text-muted-foreground">{size.size}</span>
+              <span className="text-xs text-muted-foreground">
+                {size.value}
+              </span>
               {selectedSize.value === size.value && (
                 <Check className="h-4 w-4 ml-2" />
               )}

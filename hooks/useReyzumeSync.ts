@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useRef, useState } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -10,57 +10,37 @@ import { useDebounce } from "@uidotdev/usehooks";
 export function useReyzumeSync(reyzumeId: Id<"reyzumes">) {
   const reyzume = useQuery(api.reyzumes.getReyzumeById, { id: reyzumeId });
   const updateContent = useMutation(api.reyzumes.updateContent);
-  
-  const [isSaving, setIsSaving] = useState(false);
 
   const {
     setCurrentReyzumeId,
     loadSections,
     getSectionsAsJson,
     isDirty,
-    setIsLoading,
+    isSaving,
+    setIsSaving,
     markClean,
     sections,
   } = useReyzumeStore();
 
-  const hasLoadedRef = useRef(false);
   const lastSavedContentRef = useRef<string | null>(null);
   const currentReyzumeIdRef = useRef<string | null>(null);
-
-  // Debug log
-  console.log("useReyzumeSync - reyzumeId:", reyzumeId, "reyzume:", reyzume);
+  const hasLoadedRef = useRef(false); // Moved here - at top with other refs
 
   // Load content when resume data is fetched
   useEffect(() => {
-    // console.log(
-    //   "Load effect - reyzume:",
-    //   reyzume,
-    //   "currentRef:",
-    //   currentReyzumeIdRef.current
-    // );
+    if (reyzume === undefined) return;
 
-    // Skip if still loading from Convex
-    if (reyzume === undefined) {
-      console.log("Still loading from Convex...");
-      return;
-    }
-
-    // Skip if we already loaded this reyzume
-    if (currentReyzumeIdRef.current === reyzumeId) {
-      console.log("Already loaded this reyzume");
-      return;
-    }
+    if (currentReyzumeIdRef.current === reyzumeId) return;
 
     // Mark as loaded for this reyzumeId
     currentReyzumeIdRef.current = reyzumeId;
+    hasLoadedRef.current = false; // Reset for new resume
     setCurrentReyzumeId(reyzumeId);
 
     if (reyzume) {
-      //   console.log("Loading sections from reyzume.content:", reyzume.content);
       loadSections(reyzume.content);
       lastSavedContentRef.current = reyzume.content || null;
     } else {
-      console.log("Reyzume is null, loading defaults");
       loadSections(undefined);
     }
   }, [reyzume, reyzumeId, setCurrentReyzumeId, loadSections]);
@@ -68,9 +48,9 @@ export function useReyzumeSync(reyzumeId: Id<"reyzumes">) {
   // Reset when reyzumeId changes
   useEffect(() => {
     return () => {
-      // Cleanup on unmount or reyzumeId change
       currentReyzumeIdRef.current = null;
       lastSavedContentRef.current = null;
+      hasLoadedRef.current = false;
     };
   }, [reyzumeId]);
 
@@ -79,15 +59,21 @@ export function useReyzumeSync(reyzumeId: Id<"reyzumes">) {
 
   // Auto-save when debounced sections change
   useEffect(() => {
-    // Don't save if we haven't loaded yet
     if (currentReyzumeIdRef.current !== reyzumeId) return;
+
+    if (!hasLoadedRef.current) {
+      // First debounce after loading - mark as loaded and set baseline
+      hasLoadedRef.current = true;
+      const currentContent = JSON.stringify(debouncedSections);
+      if (!lastSavedContentRef.current) {
+        lastSavedContentRef.current = currentContent;
+      }
+      return;
+    }
 
     const currentContent = JSON.stringify(debouncedSections);
 
-    // Skip if content hasn't changed from last save
-    if (currentContent === lastSavedContentRef.current) {
-      return;
-    }
+    if (currentContent === lastSavedContentRef.current) return;
 
     const save = async () => {
       setIsSaving(true);
@@ -103,7 +89,7 @@ export function useReyzumeSync(reyzumeId: Id<"reyzumes">) {
     };
 
     save();
-  }, [debouncedSections, updateContent, reyzumeId, markClean]);
+  }, [debouncedSections, updateContent, reyzumeId, markClean, setIsSaving]);
 
   // Manual save function
   const saveNow = useCallback(async () => {
@@ -121,9 +107,8 @@ export function useReyzumeSync(reyzumeId: Id<"reyzumes">) {
     } finally {
       setIsSaving(false);
     }
-  }, [getSectionsAsJson, updateContent, reyzumeId, markClean]);
+  }, [getSectionsAsJson, updateContent, reyzumeId, markClean, setIsSaving]);
 
-  // isLoading is true when Convex query hasn't returned yet
   const isLoading = reyzume === undefined;
 
   return {

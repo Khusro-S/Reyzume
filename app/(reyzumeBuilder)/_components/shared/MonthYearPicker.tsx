@@ -108,10 +108,11 @@ export function MonthYearPicker({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            "inline-flex items-center justify-end gap-1 text-sm hover:bg-muted/50 rounded px-1 py-0.5 transition-colors cursor-pointer",
+            "inline-flex items-center justify-end gap-1 hover:bg-muted/50 rounded px-1 py-0.5 transition-colors cursor-pointer",
             !value && "text-muted-foreground",
             className
           )}
+          style={{ fontSize: "0.9em" }}
         >
           {value || placeholder}
         </button>
@@ -125,10 +126,7 @@ export function MonthYearPicker({
               checked={isPresent}
               onCheckedChange={handlePresentToggle}
             />
-            <label
-              htmlFor="present"
-              className="text-sm font-medium cursor-pointer"
-            >
+            <label htmlFor="present" className="font-medium cursor-pointer">
               Present
             </label>
           </div>
@@ -138,11 +136,11 @@ export function MonthYearPicker({
           // Year picker grid
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium">Select Year</span>
+              <span className=" font-medium">Select Year</span>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 text-xs"
+                className="h-7"
                 onClick={() => setShowYearPicker(false)}
               >
                 Back
@@ -154,7 +152,7 @@ export function MonthYearPicker({
                   key={y}
                   variant={year === y ? "default" : "ghost"}
                   size="sm"
-                  className="h-8 text-xs"
+                  className="h-8"
                   onClick={() => handleYearSelect(y)}
                 >
                   {y}
@@ -203,7 +201,7 @@ export function MonthYearPicker({
                     key={month}
                     variant={selectedMonth === index ? "default" : "ghost"}
                     size="sm"
-                    className="h-8 text-xs"
+                    className="h-8"
                     disabled={isFuture || isPresent}
                     onClick={() => handleMonthSelect(index)}
                   >

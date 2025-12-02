@@ -39,7 +39,6 @@ export default function ReyzumeIdPage() {
     <div className="flex flex-col justify-center items-center">
       <NavbarReyzume reyzume={reyzume} />
 
-      {/* Add padding-top to account for fixed navbar */}
       <Toolbar />
       <div className="mt-20 min-h-screen max-w-6xl px-4">
         <ReyzumeBuilder />

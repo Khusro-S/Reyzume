@@ -10,6 +10,8 @@ export default defineSchema({
     content: v.optional(v.string()),
     isPublished: v.boolean(),
     updatedAt: v.optional(v.number()),
+    fontFamily: v.string(),
+    fontSize: v.string(),
   })
     .index("by_user", ["userId"])
     .index("by_user_folder", ["userId", "folderId"]),
