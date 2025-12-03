@@ -29,7 +29,14 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useReyzumeSync } from "@/hooks/useReyzumeSync";
 import { Loader2 } from "lucide-react";
 import { DEFAULT_ZOOM, useZoomStore } from "@/hooks/useZoomStore";
-import { getFontByValue, getFontSizeByValue } from "@/lib/fonts";
+import {
+  DEFAULT_MARGIN_HORIZONTAL,
+  DEFAULT_MARGIN_VERTICAL,
+  getFontByValue,
+  getFontSizeByValue,
+  getLineHeightByValue,
+  getMarginValue,
+} from "@/lib/fonts";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
@@ -138,6 +145,17 @@ export default function ReyzumeBuilder() {
   // Calculate scaled dimensions for the wrapper
   // const scaledWidth = `calc(210mm * ${scale})`;
   const scaledHeight = `calc(${containerHeight} * ${scale})`;
+
+  const marginVertical = getMarginValue(
+    reyzume?.marginVertical,
+    DEFAULT_MARGIN_VERTICAL
+  );
+  const marginHorizontal = getMarginValue(
+    reyzume?.marginHorizontal,
+    DEFAULT_MARGIN_HORIZONTAL
+  );
+
+  const lineHeight = getLineHeightByValue(reyzume?.lineHeight).value;
   return (
     <div className="flex pb-20 w-full justify-center items-center">
       <div
@@ -149,12 +167,14 @@ export default function ReyzumeBuilder() {
         }}
       >
         <div
-          className="w-[210mm] max-w-[92vw] bg-white rounded-xl shadow-lg print:shadow-none print:max-w-none origin-top transition-transform duration-200 p-[5mm]"
+          className="w-[210mm] max-w-[92vw] bg-white rounded-xl shadow-lg print:shadow-none print:max-w-none origin-top transition-transform duration-200"
           style={{
             height: containerHeight,
             transform: `scale(${scale})`,
             fontFamily: fontFamily,
             fontSize: fontSize,
+            padding: `${marginVertical}mm ${marginHorizontal}mm`,
+            lineHeight: lineHeight,
             // Visual page break marker every 297mm (A4 height)
             backgroundImage:
               "linear-gradient(to bottom, transparent calc(297mm - 1px), #e5e7eb calc(297mm - 1px), #e5e7eb 297mm)",

@@ -223,7 +223,9 @@ export function RichTextEditor({
         editor={editor}
         style={style}
         className={cn(
-          "w-full overflow-hidden bg-transparent [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[1.5em]",
+          "overflow-hidden bg-transparent [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[1.5em]",
+          // Underline on focus
+          "focus-within:border-b focus-within:border-b-foreground/muted transition-colors",
           // Placeholder styles
           "[&_.ProseMirror.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]",
           "[&_a]:underline [&_a]:text-primary [&_a]:cursor-pointer",

@@ -44,7 +44,7 @@ export function SkillsSection({ section }: SkillsSectionProps) {
             id={category.id}
             className="flex gap-2"
           >
-            <div className="flex justify-center items-baseline w-1/4 flex-1">
+            <div className="flex justify-center items-baseline max-w-1/3 shrink-0">
               <EditableText
                 value={category.label}
                 onChange={(val) =>

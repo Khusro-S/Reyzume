@@ -23,6 +23,9 @@ export const createReyzume = mutation({
       isPublished: false,
       fontFamily: "Times New Roman, Times, serif",
       fontSize: "11pt",
+      marginVertical: "10",
+      marginHorizontal: "10",
+      lineHeight: "1.4",
     });
 
     return resumeId;
@@ -31,9 +34,10 @@ export const createReyzume = mutation({
 
 export const createFolder = mutation({
   args: {
-    name: v.string(),
+    title: v.string(),
     icon: v.optional(v.string()),
     color: v.optional(v.string()),
+    isArchived: v.boolean(),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -44,10 +48,11 @@ export const createFolder = mutation({
     const userId = identity.subject;
 
     const folderId = await ctx.db.insert("folders", {
-      name: args.name,
+      title: args.title,
       userId,
       icon: args.icon,
       color: args.color,
+      isArchived: args.isArchived,
     });
 
     return folderId;
@@ -184,8 +189,6 @@ export const updateContent = mutation({
     return { success: true };
   },
 });
-
-// ...existing code...
 
 // Delete a reyzume permanently
 export const deleteReyzume = mutation({
@@ -336,6 +339,71 @@ export const updateFontSize = mutation({
       fontSize: args.fontSize,
       updatedAt: Date.now(),
     });
+    return { success: true };
+  },
+});
+
+export const updateMargins = mutation({
+  args: {
+    id: v.id("reyzumes"),
+    marginVertical: v.string(),
+    marginHorizontal: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const reyzume = await ctx.db.get(args.id);
+    if (!reyzume) {
+      throw new Error("Reyzume not found");
+    }
+
+    const updates: {
+      marginVertical?: string;
+      marginHorizontal?: string;
+      updatedAt: number;
+    } = {
+      updatedAt: Date.now(),
+    };
+
+    if (args.marginVertical !== undefined) {
+      updates.marginVertical = args.marginVertical;
+    }
+    if (args.marginHorizontal !== undefined) {
+      updates.marginHorizontal = args.marginHorizontal;
+    }
+
+    await ctx.db.patch(args.id, updates);
+  },
+});
+
+export const updateLineHeight = mutation({
+  args: {
+    id: v.id("reyzumes"),
+    lineHeight: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const reyzume = await ctx.db.get(args.id);
+    if (!reyzume) {
+      throw new Error("Reyzume not found");
+    }
+
+    if (reyzume.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
+    await ctx.db.patch(args.id, {
+      lineHeight: args.lineHeight,
+      updatedAt: Date.now(),
+    });
+
     return { success: true };
   },
 });

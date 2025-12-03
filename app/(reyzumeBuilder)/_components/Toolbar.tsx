@@ -4,6 +4,8 @@ import BulletPoint from "./toolbarButtons/BulletPoint";
 import FontSelector from "./toolbarButtons/FontSelector";
 import FontSize from "./toolbarButtons/FontSize";
 import Hyperlink from "./toolbarButtons/Hyperlink";
+import Spacing from "./toolbarButtons/Spacing";
+
 import TextFormatting from "./toolbarButtons/TextFormatting";
 import UndoRedo from "./toolbarButtons/UndoRedo";
 import Zoom from "./toolbarButtons/Zoom";
@@ -19,6 +21,7 @@ export default function Toolbar() {
       <TextFormatting />
       <BulletPoint />
       <Hyperlink />
+      <Spacing />
     </div>
   );
 }

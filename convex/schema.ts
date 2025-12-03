@@ -12,6 +12,9 @@ export default defineSchema({
     updatedAt: v.optional(v.number()),
     fontFamily: v.string(),
     fontSize: v.string(),
+    marginVertical: v.string(),
+    marginHorizontal: v.string(),
+    lineHeight: v.string(),
   })
     .index("by_user", ["userId"])
     .index("by_user_folder", ["userId", "folderId"]),
@@ -20,9 +23,10 @@ export default defineSchema({
   //   filterFields: ["userId", "isArchived"],
   // })
   folders: defineTable({
-    name: v.string(),
+    title: v.string(),
     userId: v.string(),
     icon: v.optional(v.string()),
     color: v.optional(v.string()),
+    isArchived: v.boolean(),
   }).index("by_user", ["userId"]),
 });

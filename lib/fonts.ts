@@ -39,7 +39,7 @@ export const MARGIN_PRESETS = {
 export const DEFAULT_MARGIN_VERTICAL = "10";
 export const DEFAULT_MARGIN_HORIZONTAL = "10";
 
-export const MIN_MARGIN = 0;
+export const MIN_MARGIN = 1;
 export const MAX_MARGIN = 25;
 
 export function getMarginValue(
@@ -49,4 +49,20 @@ export function getMarginValue(
   if (!value) return parseInt(defaultValue);
   const parsed = parseInt(value);
   return isNaN(parsed) ? parseInt(defaultValue) : parsed;
+}
+
+// Line height presets
+export const LINE_HEIGHTS = [
+  { label: "Compact", value: "1.2" },
+  { label: "Normal", value: "1.4" },
+  { label: "Relaxed", value: "1.6" },
+  { label: "Loose", value: "1.8" },
+] as const;
+
+export const DEFAULT_LINE_HEIGHT = LINE_HEIGHTS[1];
+
+export type LineHeightType = (typeof LINE_HEIGHTS)[number];
+
+export function getLineHeightByValue(value: string | undefined): LineHeightType {
+  return LINE_HEIGHTS.find((l) => l.value === value) ?? DEFAULT_LINE_HEIGHT;
 }

@@ -39,7 +39,7 @@ export function DraggableItem({ id, children, className }: DraggableItemProps) {
     >
       {/* Drag handle */}
       <button
-        className="absolute -left-5 top-1 cursor-grab active:cursor-grabbing md:opacity-0 md:group-hover/item:opacity-100 transition-opacity touch-none select-none"
+        className="absolute -left-5 top-0 cursor-grab active:cursor-grabbing md:opacity-0 md:group-hover/item:opacity-100 transition-opacity touch-none select-none"
         {...attributes}
         {...listeners}
       >
