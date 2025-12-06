@@ -1,7 +1,14 @@
+// app/(reyzumeBuilder)/_components/ReyzumeBuilder.tsx
 "use client";
 
 import { useReyzumeSections } from "@/hooks/useReyzumeSections";
-import { useState, useEffect, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import {
   DndContext,
   closestCenter,
@@ -27,8 +34,8 @@ import { HiddenSectionsPanel } from "./sections/HiddenSectionsPanel";
 import { useParams } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import { useReyzumeSync } from "@/hooks/useReyzumeSync";
-import { Loader2 } from "lucide-react";
-import { DEFAULT_ZOOM, useZoomStore } from "@/hooks/useZoomStore";
+import { Loader2, AlertTriangle } from "lucide-react";
+import { useZoomStore } from "@/hooks/useZoomStore";
 import {
   DEFAULT_MARGIN_HORIZONTAL,
   DEFAULT_MARGIN_VERTICAL,
@@ -40,72 +47,80 @@ import {
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
+const A4_HEIGHT_MM = 297;
+const A4_WIDTH_MM = 210;
+const MM_TO_PX = 3.7795275591;
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+export interface ReyzumeBuilderHandle {
+  getContainerRef: () => HTMLDivElement | null;
+  getMargins: () => { vertical: number; horizontal: number };
+}
 
-  return isMobile;
-};
-
-export default function ReyzumeBuilder() {
+const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
   const params = useParams();
   const reyzumeId = params.reyzumeId as Id<"reyzumes">;
 
   const { isLoading } = useReyzumeSync(reyzumeId);
-  // const { isLoading } = useReyzumeSync(reyzumeId);
   const { getZoom } = useZoomStore();
-  const storedZoom = getZoom(reyzumeId);
-  const isMobile = useIsMobile();
-
-  const zoom = isMobile ? DEFAULT_ZOOM : storedZoom;
   const { reorderSections, visibleSections } = useReyzumeSections();
 
   const reyzume = useQuery(api.reyzumes.getReyzumeById, { id: reyzumeId });
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const [pageCount, setPageCount] = useState(1);
+  const [showOverflowWarning, setShowOverflowWarning] = useState(false);
+
+  const zoom = getZoom(reyzumeId);
+  const scale = zoom / 100;
+
   const fontFamily = getFontByValue(reyzume?.fontFamily).value;
   const fontSize = getFontSizeByValue(reyzume?.fontSize).value;
+  const lineHeight = getLineHeightByValue(reyzume?.lineHeight).value;
+
+  const marginVertical = getMarginValue(
+    reyzume?.marginVertical,
+    DEFAULT_MARGIN_VERTICAL
+  );
+  const marginHorizontal = getMarginValue(
+    reyzume?.marginHorizontal,
+    DEFAULT_MARGIN_HORIZONTAL
+  );
+
+  useImperativeHandle(ref, () => ({
+    getContainerRef: () => containerRef.current,
+    getMargins: () => ({
+      vertical: marginVertical,
+      horizontal: marginHorizontal,
+    }),
+  }));
+
+  useEffect(() => {
+    const node = contentRef.current;
+    if (!node) return;
+
+    const observer = new ResizeObserver(() => {
+      const heightPx = node.scrollHeight;
+      const pageHeightPx = (A4_HEIGHT_MM - marginVertical * 2) * MM_TO_PX;
+
+      const pages = Math.max(1, Math.ceil(heightPx / pageHeightPx));
+      setPageCount(pages);
+      setShowOverflowWarning(pages > 2); // arbitrary limit for UX
+    });
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [marginVertical]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
+      activationConstraint: { distance: 8 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  // const { visibleSections, reorderSections } = useReyzumeSections();
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [containerHeight, setContainerHeight] = useState("297mm");
-
-  useEffect(() => {
-    const element = contentRef.current;
-    if (!element) return;
-
-    const observer = new ResizeObserver(() => {
-      const contentHeight = element.getBoundingClientRect().height;
-      // A4 height in pixels (96 DPI) - approx 1122.5px
-      // 30mm padding in pixels - approx 113.4px
-      const A4_HEIGHT_PX = 1122.5;
-      const PADDING_PX = 113.4;
-
-      const totalHeight = contentHeight + PADDING_PX;
-      const pages = Math.ceil(totalHeight / A4_HEIGHT_PX);
-      const heightMm = Math.max(pages, 1) * 297;
-
-      setContainerHeight(`${heightMm}mm`);
-    });
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [isLoading]); // Re-run when loading state changes
 
   const fixedSections = visibleSections.filter(
     (s) => s.type === "header" || s.type === "summary"
@@ -134,55 +149,55 @@ export default function ReyzumeBuilder() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !reyzume) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
-  const scale = zoom / 100;
-  // Calculate scaled dimensions for the wrapper
-  // const scaledWidth = `calc(210mm * ${scale})`;
-  const scaledHeight = `calc(${containerHeight} * ${scale})`;
 
-  const marginVertical = getMarginValue(
-    reyzume?.marginVertical,
-    DEFAULT_MARGIN_VERTICAL
-  );
-  const marginHorizontal = getMarginValue(
-    reyzume?.marginHorizontal,
-    DEFAULT_MARGIN_HORIZONTAL
-  );
-
-  const lineHeight = getLineHeightByValue(reyzume?.lineHeight).value;
   return (
-    <div className="flex pb-20 w-full justify-center items-center">
+    <div className="flex flex-col items-center gap-3 pb-20 print:gap-0 print:pb-0">
+      {showOverflowWarning && (
+        <div className="flex items-center gap-2 rounded-md border border-yellow-400 bg-yellow-50 px-3 py-2 text-sm text-yellow-900 print:hidden">
+          <AlertTriangle className="h-4 w-4" />
+          <span>
+            Content runs past two pages. Consider trimming sections before
+            exporting.
+          </span>
+        </div>
+      )}
+
       <div
-        className="transition-all duration-200 ease-out"
-        style={{
-          // height: `calc(${containerHeight} * ${scale})`,
-          // width: scaledWidth,
-          height: scaledHeight,
-        }}
+        className="transition-all duration-200"
+        style={{ height: `calc(${pageCount * A4_HEIGHT_MM}mm * ${scale})` }}
       >
         <div
-          className="w-[210mm] max-w-[92vw] bg-white rounded-xl shadow-lg print:shadow-none print:max-w-none origin-top transition-transform duration-200"
+          ref={containerRef}
+          data-pdf-container
+          className="relative origin-top rounded-xl bg-white shadow-lg print:shadow-none"
           style={{
-            height: containerHeight,
+            width: `${A4_WIDTH_MM}mm`,
+            minHeight: `${pageCount * A4_HEIGHT_MM}mm`, // Add minimum height
+            maxWidth: "92vw",
             transform: `scale(${scale})`,
-            fontFamily: fontFamily,
-            fontSize: fontSize,
+            fontFamily,
+            fontSize,
+            lineHeight,
             padding: `${marginVertical}mm ${marginHorizontal}mm`,
-            lineHeight: lineHeight,
-            // Visual page break marker every 297mm (A4 height)
-            backgroundImage:
-              "linear-gradient(to bottom, transparent calc(297mm - 1px), #e5e7eb calc(297mm - 1px), #e5e7eb 297mm)",
-            backgroundSize: "100% 297mm",
           }}
         >
-          <div className="space-y-2" ref={contentRef}>
-            {/* Fixed Sections (Header, Summary) */}
+          {/* Visual page guides */}
+          {Array.from({ length: pageCount - 1 }).map((_, idx) => (
+            <div
+              key={idx}
+              className="absolute inset-x-0 h-px bg-gray-300 print:hidden pointer-events-none z-10"
+              style={{ top: `${(idx + 1) * A4_HEIGHT_MM}mm` }}
+            />
+          ))}
+
+          <div ref={contentRef} className="space-y-2">
             {fixedSections.map((section) => (
               <SectionBlock
                 key={section.id}
@@ -191,7 +206,6 @@ export default function ReyzumeBuilder() {
               />
             ))}
 
-            {/* Draggable Sections */}
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -215,16 +229,12 @@ export default function ReyzumeBuilder() {
             </DndContext>
           </div>
         </div>
+
         <HiddenSectionsPanel />
       </div>
     </div>
   );
-}
+});
 
-// export default function ReyzumeBuilder() {
-//   return (
-//     <div className="aspect-[1/1.414] w-[95vw] max-w-4xl bg-white shadow-lg print:shadow-none print:max-w-none origin-top rounded-xl">
-//       ReyzumeBuilder
-//     </div>
-//   );
-// }
+ReyzumeBuilder.displayName = "ReyzumeBuilder";
+export default ReyzumeBuilder;

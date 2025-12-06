@@ -64,7 +64,8 @@ export const getByFolder = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized or not logged in");
+      // throw new Error("Unauthorized or not logged in");
+      return [];
     }
 
     const userId = identity.subject;
@@ -142,13 +143,15 @@ export const getReyzumeById = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Not authenticated");
+      //  throw new Error("Not authenticated");
+      return null;
     }
 
     const reyzume = await ctx.db.get(args.id);
 
     if (!reyzume) {
       throw new Error("Reyzume not found");
+      // return null;
     }
 
     if (reyzume.userId !== identity.subject) {

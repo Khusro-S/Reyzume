@@ -30,6 +30,7 @@ export function DraggableItem({ id, children, className }: DraggableItemProps) {
   return (
     <div
       ref={setNodeRef}
+      data-item-id={id}
       style={style}
       className={cn(
         "relative group/item",

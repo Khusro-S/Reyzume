@@ -45,9 +45,9 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
         className="space-y-4"
       >
         {content.items.map((item) => (
-          <DraggableItem key={item.id} id={item.id} className="space-y-1">
+          <DraggableItem key={item.id} id={item.id}>
             {/* company name and Location */}
-            <div className="flex justify-between items-baseline gap-4 m-0">
+            <div className="flex justify-between items-center gap-4 m-0">
               <div className="flex gap-1 min-w-0 flex-1">
                 <EditableText
                   value={item.title}
@@ -78,7 +78,7 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
               </div>
             </div>
             {/* job title and Dates */}
-            <div className="flex justify-between items-baseline gap-4">
+            <div className="flex justify-between items-center gap-4">
               <div className="min-w-0 flex-1">
                 <EditableText
                   value={item.company}

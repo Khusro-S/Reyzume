@@ -11,7 +11,10 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title, onAdd, children }: SectionHeaderProps) {
   return (
-    <div className="flex items-center gap-1 justify-start mb-3 border-b-[1.5px] border-black/30">
+    <div
+      className="flex items-center gap-1 justify-start mb-2 border-b-[1.5px] border-black/30"
+      data-section-header
+    >
       {children || (
         <h2 className="font-semibold" style={{ fontSize: "1.15em" }}>
           {title}

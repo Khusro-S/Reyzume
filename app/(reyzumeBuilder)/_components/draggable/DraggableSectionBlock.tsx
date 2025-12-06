@@ -37,6 +37,7 @@ export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
   return (
     <div
       ref={setNodeRef}
+      data-section-id={section.id}
       style={style}
       //   className="relative group border border-transparent hover:border-border rounded-lg p-3 transition-all print:break-inside-avoid"
       className={cn(

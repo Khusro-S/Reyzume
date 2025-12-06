@@ -1,12 +1,12 @@
 "use client";
 
 import { AuthBackground } from "@/components/auth/AuthBackground";
-import { SignUp } from "@clerk/nextjs";
+import { SignIn } from "@clerk/nextjs";
 
-export default function SignupPage() {
+export default function SignInPage() {
   return (
     <AuthBackground>
-      <SignUp fallbackRedirectUrl="/reyzumes" />
+      <SignIn fallbackRedirectUrl="/reyzumes" />
     </AuthBackground>
   );
 }

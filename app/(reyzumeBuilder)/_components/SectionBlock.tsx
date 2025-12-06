@@ -21,7 +21,10 @@ export function SectionBlock({
 
   if (!isDraggable) {
     return (
-      <div className="relative group  transition-all">
+      <div
+        className="relative group  transition-all"
+        data-section-id={section.id}
+      >
         {/* Section controls for non-draggable sections (header can't be deleted, summary can) */}
         <SectionControls
           sectionType={section.type}
