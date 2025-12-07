@@ -7,7 +7,7 @@ const steps = [
   {
     title: "Create",
     description:
-      "Kick things off with tailored prompts and AI-generated outlines.",
+      "Start with a clean canvas and add structured sections for experience, education, and skills.",
   },
   {
     title: "Customize",
@@ -31,7 +31,7 @@ export function HowItWorks() {
           Build a standout resume in three intuitive steps
         </h2>
       </div>
-      <div className="grid gap-10 md:gap-6 md:grid-cols-3">
+      <div className="grid gap-10 md:gap-6 md:grid-cols-3 text-center">
         {steps.map((step, index) => (
           <motion.div
             key={step.title}
@@ -39,7 +39,7 @@ export function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.15 }}
             viewport={{ once: true, amount: 0.5 }}
-            className="relative rounded-3xl border border-[#3B82F6]/15 bg-white p-8 text-left shadow-sm flex items-center justify-center flex-col "
+            className="relative rounded-3xl border border-[#3B82F6]/15 bg-white p-8 shadow-sm flex items-center justify-center flex-col "
           >
             <div className="relative flex items-center gap-4">
               <span className="absolute -top-14 left-1/2 -translate-x-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">

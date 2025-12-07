@@ -22,8 +22,8 @@ export function CallToAction() {
           Ready to land your next interview?
         </h2>
         <p className="text-lg text-white/90">
-          Join thousands of professionals building smarter resumes. Get started
-          for free in just a few clicks.
+          Your next career move starts here. Create your resume for free in
+          minutes.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row">
           <Button

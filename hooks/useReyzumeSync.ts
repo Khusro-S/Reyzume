@@ -24,7 +24,7 @@ export function useReyzumeSync(reyzumeId: Id<"reyzumes">) {
 
   const lastSavedContentRef = useRef<string | null>(null);
   const currentReyzumeIdRef = useRef<string | null>(null);
-  const hasLoadedRef = useRef(false); // Moved here - at top with other refs
+  const hasLoadedRef = useRef(false);
 
   // Load content when resume data is fetched
   useEffect(() => {

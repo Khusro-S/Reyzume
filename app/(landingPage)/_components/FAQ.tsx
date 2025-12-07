@@ -9,29 +9,29 @@ import {
 
 const faqs = [
   {
-    question: "What makes it ATS-friendly?",
+    question: "Is it free to use?",
     answer:
-      "Our resumes are designed with clean formatting, proper heading hierarchy, and keyword optimization that Applicant Tracking Systems can easily parse. We avoid complex layouts, graphics, and tables that confuse ATS software.",
+      "Yes! Reyzume is completely free to use. Create unlimited resumes, customize them fully, and export as PDF anytime.",
   },
   {
     question: "Can I download my resume as PDF?",
     answer:
-      "Yes! You can download your resume as a high-quality, ATS-compatible PDF. We also offer Word document exports for maximum compatibility with different application systems.",
-  },
-  {
-    question: "Is it free to use?",
-    answer:
-      "We offer a free tier that includes basic templates and one resume download. Premium plans unlock advanced AI features, unlimited downloads, and access to our full template library.",
-  },
-  {
-    question: "How does the AI enhancer work?",
-    answer:
-      "Our AI analyzes your content and suggests improvements for clarity, impact, and keyword optimization. It helps you highlight achievements, use action verbs, and tailor your resume to specific job descriptions.",
+      "Yes! You can download your resume as a high-quality, print-ready PDF using your browser's native print dialog.",
   },
   {
     question: "Can I edit my resume after downloading?",
     answer:
       "Your resumes are saved to your account and can be edited anytime. You can also create multiple versions for different job applications.",
+  },
+  {
+    question: "What makes it ATS-friendly?",
+    answer:
+      "Our resumes are designed with clean formatting, proper heading hierarchy, and keyword optimization that Applicant Tracking Systems can easily parse. We avoid complex layouts, graphics, and tables that confuse ATS software.",
+  },
+  {
+    question: "Can I customize fonts and spacing?",
+    answer:
+      "Yes! You have full control over font family, font size, line height, and margins. Changes apply in real-time so you can see exactly how your resume will look.",
   },
 ];
 

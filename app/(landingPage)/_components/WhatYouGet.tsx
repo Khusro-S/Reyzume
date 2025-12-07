@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { FileText, GripVertical, Zap } from "lucide-react";
+import { Clock, Sparkles, RefreshCw } from "lucide-react";
 
 import {
   Card,
@@ -10,48 +10,47 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const features = [
+const benefits = [
   {
-    title: "Drag-and-Drop Editor",
+    title: "Save Time",
     description:
-      "Reorder sections and items effortlessly with intuitive drag-and-drop. Your resume layout adapts instantly as you work.",
-    icon: GripVertical,
+      "Build a professional resume in minutes, not hours. Focus on content, not formatting.",
+    icon: Clock,
   },
   {
-    title: "Real-Time Customization",
+    title: "Stand Out",
     description:
-      "Adjust fonts, spacing, margins, and line height on the fly. See every change reflected immediately in your resume preview.",
-    icon: Zap,
+      "Clean, modern layouts that recruiters notice. Pass ATS filters and impress hiring managers.",
+    icon: Sparkles,
   },
   {
-    title: "ATS-Proof Export",
+    title: "Stay Flexible",
     description:
-      "Export clean, standards-friendly PDFs optimized to pass applicant tracking systems every time.",
-    icon: FileText,
+      "Create multiple versions for different roles. Update anytime, export instantly.",
+    icon: RefreshCw,
   },
 ];
 
-export function Features() {
+export default function WhatYouGet() {
   return (
-    <section id="about" className="space-y-14">
+    <section className="space-y-14">
       <div className="flex flex-col gap-4 text-center">
         <span className="text-lg font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">
-          Why Reyzume
+          What You Get
         </span>
         <h2 className="text-3xl font-semibold text-[#111827] sm:text-4xl">
-          Designed to get you hired faster
+          Everything you need to land your next role
         </h2>
         <p className="mx-auto max-w-2xl text-lg text-[#4B5563]">
-          Every feature keeps recruiters in mind. Delightful to create, powerful
-          when submitted.
+          Built for job seekers who value speed, quality, and results.
         </p>
       </div>
       <div className="grid gap-12 md:gap-10 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {features.map((feature, index) => {
-          const Icon = feature.icon;
+        {benefits.map((benefit, index) => {
+          const Icon = benefit.icon;
           return (
             <motion.div
-              key={feature.title}
+              key={benefit.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -63,9 +62,9 @@ export function Features() {
                     <Icon className="h-6 w-6" />
                   </div>
                   <CardTitle className="text-xl font-semibold text-[#111827]">
-                    {feature.title}
+                    {benefit.title}
                   </CardTitle>
-                  <CardDescription>{feature.description}</CardDescription>
+                  <CardDescription>{benefit.description}</CardDescription>
                 </CardHeader>
               </Card>
             </motion.div>

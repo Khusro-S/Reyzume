@@ -28,27 +28,21 @@ export function Hero() {
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="space-y-8"
         >
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#3B82F6]/10 px-4 py-1 text-sm font-medium text-[#2563eb]">
+          {/* <span className="inline-flex items-center gap-2 rounded-full bg-[#3B82F6]/10 px-4 py-1 text-sm font-medium text-[#2563eb]">
             Trusted AI resume builder
-          </span>
+          </span> */}
           <h1 className="text-4xl font-semibold tracking-tight text-[#111827] sm:text-5xl lg:text-6xl">
             Build ATS-Ready Resumes in Minutes.
           </h1>
           <p className="max-w-lg text-lg leading-relaxed text-[#4B5563]">
-            Fast. Clean. AI-Smart. Reyzume guides you from blank page to
-            polished resume with intelligent prompts, stunning templates, and
-            export-ready formats.
+            Fast. Clean. Professional. Reyzume gives you an intuitive
+            drag-and-drop editor, real-time formatting controls, and
+            export-ready PDFs, all with automatic cloud sync.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button size="lg">
               <Link href="/signin">Start Building</Link>
             </Button>
-            {/* <SignInButton mode="modal" fallbackRedirectUrl="/reyzumes">
-              <Button>Start Building</Button>
-            </SignInButton> */}
-            {/* <Button size="lg" variant="secondary">
-              <Link href="#templates">See Templates</Link>
-            </Button> */}
           </div>
         </motion.div>
         {/* <FinderWindow /> */}
@@ -98,43 +92,6 @@ export function Hero() {
             delay: 2,
           }}
         />
-        {/* <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ delay: 0.2, duration: 0.7, ease: "easeOut" }}
-          className="relative flex justify-center"
-        >
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="relative h-[360px] w-[260px] overflow-hidden rounded-3xl border border-[#3B82F6]/20 bg-[#F9FAFB] shadow-xl"
-          >
-            <Image
-              src="/templates/template-hero.svg"
-              alt="Preview of a Reyzume resume template"
-              fill
-              priority
-              sizes="(max-width: 768px) 60vw, 260px"
-              className="object-cover"
-            />
-          </motion.div> */}
-        {/* <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="absolute -bottom-10 right-10 hidden rounded-2xl border border-[#FACC15]/40 bg-white/95 px-4 py-3 shadow-lg lg:flex"
-          >
-            <div>
-              <p className="text-sm font-medium text-[#2563eb]">
-                AI Suggestions
-              </p>
-              <p className="text-xs text-[#4B5563]">
-                Tailored bullet points to highlight your impact.
-              </p>
-            </div>
-          </motion.div> */}
-        {/* </motion.div> */}
       </div>
     </section>
   );

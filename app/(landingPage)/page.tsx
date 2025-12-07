@@ -4,7 +4,8 @@ import { Features } from "@/app/(landingPage)/_components/Features";
 import { Hero } from "@/app/(landingPage)/_components/Hero";
 import { HowItWorks } from "@/app/(landingPage)/_components/HowItWorks";
 // import { Templates } from "@/app/(landingPage)/_components/Templates";
-import { Testimonials } from "@/app/(landingPage)/_components/Testimonials";
+// import { Testimonials } from "@/app/(landingPage)/_components/Testimonials";
+import WhatYouGet from "./_components/WhatYouGet";
 
 export default function Home() {
   return (
@@ -16,7 +17,8 @@ export default function Home() {
           <Features />
           <HowItWorks />
           {/* <Templates /> */}
-          <Testimonials />
+          {/* <Testimonials /> */}
+          <WhatYouGet />
           <CallToAction />
           <FAQ />
         </div>
