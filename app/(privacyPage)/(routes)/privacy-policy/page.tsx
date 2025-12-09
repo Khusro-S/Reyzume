@@ -37,10 +37,9 @@ export default function PrivacyPage() {
                 Introduction
               </h2>
               <p className="text-[#4B5563] leading-relaxed">
-                Reyzume (&quot;we,&ldquo; &quot;our,&ldquo; or &quot;us&ldquo;)
-                is committed to protecting your privacy. This Privacy Policy
-                explains how we collect, use, and safeguard your information
-                when you use our resume builder service.
+                Reyzume is committed to protecting your privacy. This Privacy
+                Policy explains how we collect, use, and safeguard your
+                information when you use our resume builder service.
               </p>
             </section>
 
