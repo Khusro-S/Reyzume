@@ -167,9 +167,12 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-[#111827]">Privacy</h2>
               <p className="text-[#4B5563] leading-relaxed">
                 Your use of the Service is also governed by our{" "}
-                <a href="/privacy" className="text-[#3B82F6] hover:underline">
+                <Link
+                  href="/privacy-policy"
+                  className="text-[#3B82F6] hover:underline"
+                >
                   Privacy Policy
-                </a>
+                </Link>
                 . Please review it to understand our data practices.
               </p>
             </section>
