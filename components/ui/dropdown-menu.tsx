@@ -6,10 +6,25 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+const SelectContext = React.createContext<
+  React.Dispatch<React.SetStateAction<boolean>>
+>(() => {});
+
 function DropdownMenu({
+  defaultOpen,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+  const [open, setOpen] = React.useState(defaultOpen ?? false);
+  return (
+    <SelectContext.Provider value={setOpen}>
+      <DropdownMenuPrimitive.Root
+        open={open}
+        onOpenChange={setOpen}
+        data-slot="dropdown-menu"
+        {...props}
+      />
+    </SelectContext.Provider>
+  );
 }
 
 function DropdownMenuPortal({
@@ -17,18 +32,27 @@ function DropdownMenuPortal({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) {
   return (
     <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
-  )
+  );
 }
 
 function DropdownMenuTrigger({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+  const setIsOpen = React.useContext(SelectContext);
   return (
     <DropdownMenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
+      onPointerDown={(e) => {
+        if (e.pointerType === "touch") e.preventDefault(); // disable the default behavior in mobile
+      }}
+      onPointerUp={(e) => {
+        if (e.pointerType === "touch") {
+          setIsOpen((prevState) => !prevState); // use onPointerUp to simulate onClick in mobile
+        }
+      }}
       {...props}
     />
-  )
+  );
 }
 
 function DropdownMenuContent({

@@ -28,8 +28,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import ReyzumeCard from "../_components/ReyzumeCard";
 import ReyzumesPageSkeleton from "../_components/ReyzumesPageSkeleton";
+import { useUser } from "@clerk/nextjs";
+import { getDefaultSections } from "@/hooks/reyzumeStore";
 
 export default function ReyzumesPage() {
+  const { user } = useUser();
   const createReyzume = useMutation(api.reyzumes.createReyzume);
   const archiveReyzume = useMutation(api.reyzumes.archiveReyzume);
   const restoreReyzume = useMutation(api.reyzumes.restoreReyzume);
@@ -50,15 +53,25 @@ export default function ReyzumesPage() {
     if (isCreating) return;
 
     setIsCreating(true);
-    const promise = createReyzume({ title: "Untitled" })
-      .then((reyzumeId) => {
-        if (reyzumeId) {
-          router.push(`/reyzumes/${reyzumeId}`);
-        }
-      })
-      .finally(() => {
-        setIsCreating(false);
-      });
+
+        const defaultSections = getDefaultSections({
+          fullName: user?.fullName,
+          email: user?.primaryEmailAddress?.emailAddress,
+          phone: user?.primaryPhoneNumber?.phoneNumber,
+        });
+
+        const promise = createReyzume({
+          title: "Untitled",
+          content: JSON.stringify(defaultSections),
+        })
+          .then((reyzumeId) => {
+            if (reyzumeId) {
+              router.push(`/reyzumes/${reyzumeId}`);
+            }
+          })
+          .finally(() => {
+            setIsCreating(false);
+          });
 
     toast.promise(promise, {
       loading: "Creating new Reyzume...",

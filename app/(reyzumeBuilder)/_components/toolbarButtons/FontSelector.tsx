@@ -63,51 +63,51 @@ export default function FontSelector() {
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip open={isTruncated && isTooltipOpen}>
-        <DropdownMenu>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild className="h-full">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 w-24 hover:bg-accent"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
-                <Type className="h-4 w-4" />
-                <span ref={spanRef} className="text-sm truncate">
-                  {selectedFont.name}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          {isTruncated && (
+    // <TooltipProvider>
+    // <Tooltip open={isTruncated && isTooltipOpen}>
+    <DropdownMenu>
+      {/* <TooltipTrigger asChild> */}
+      <DropdownMenuTrigger asChild className="h-full">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-9 w-24 hover:bg-accent"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <Type className="h-4 w-4" />
+          <span ref={spanRef} className="text-sm truncate">
+            {selectedFont.name}
+          </span>
+        </Button>
+      </DropdownMenuTrigger>
+      {/* </TooltipTrigger> */}
+      {/* {isTruncated && (
             <TooltipContent>
               <p className="max-w-[300px] w-full wrap-break-word">
                 {selectedFont.name}
               </p>
             </TooltipContent>
-          )}
-          <DropdownMenuContent align="start" className="w-48">
-            {RESUME_FONTS.map((font) => (
-              <DropdownMenuItem
-                key={font.value}
-                onClick={() => handleFontChange(font)}
-                className="cursor-pointer"
-                style={{ fontFamily: font.value }}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <span>{font.name}</span>
-                  {selectedFont.value === font.value && (
-                    <Check className="h-4 w-4" />
-                  )}
-                </div>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </Tooltip>
-    </TooltipProvider>
+          )} */}
+      <DropdownMenuContent align="start" className="w-48">
+        {RESUME_FONTS.map((font) => (
+          <DropdownMenuItem
+            key={font.value}
+            onClick={() => handleFontChange(font)}
+            className="cursor-pointer"
+            style={{ fontFamily: font.value }}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span>{font.name}</span>
+              {selectedFont.value === font.value && (
+                <Check className="h-4 w-4" />
+              )}
+            </div>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+    // </Tooltip>
+    // </TooltipProvider>
   );
 }

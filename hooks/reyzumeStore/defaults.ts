@@ -19,14 +19,33 @@ import {
   SummaryContent,
 } from "./types";
 
-export function getDefaultSections(): Section[] {
+interface UserData {
+  fullName?: string | null;
+  email?: string | null;
+  phone?: string | null;
+}
+
+function getLocationFromTimezone(): string {
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const parts = timezone.split("/");
+    if (parts.length >= 2) {
+      return parts[parts.length - 1].replace(/_/g, " ");
+    }
+  } catch {
+    return "";
+  }
+  return "";
+}
+
+export function getDefaultSections(userData?: UserData): Section[] {
   return [
     {
       id: "header-1",
       type: "header",
       order: 0,
       isVisible: true,
-      content: getSectionDefaultContent("header"),
+      content: getSectionDefaultContent("header", userData),
     },
     {
       id: "summary-1",
@@ -66,12 +85,21 @@ export function getDefaultSections(): Section[] {
   ];
 }
 
-export function getSectionDefaultContent(type: SectionType): SectionContent {
+export function getSectionDefaultContent(
+  type: SectionType,
+  userData?: UserData
+): SectionContent {
   switch (type) {
     case "header":
+      const contactParts = [
+        userData?.email,
+        userData?.phone,
+        getLocationFromTimezone(),
+      ].filter(Boolean);
+
       return {
-        name: "",
-        contactInfo: "",
+        name: userData?.fullName || "",
+        contactInfo: contactParts.join(" | "),
         links: [],
       } as HeaderContent;
     case "summary":

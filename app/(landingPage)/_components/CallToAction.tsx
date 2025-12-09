@@ -31,7 +31,7 @@ export function CallToAction() {
             asChild
             className="bg-white text-[#1d4ed8] hover:bg-transparent hover:text-white hover:border hover:border-white"
           >
-            <Link href="/signup">Create My Resume</Link>
+            <Link href="/signin">Create My Resume</Link>
           </Button>
         </div>
       </motion.div>

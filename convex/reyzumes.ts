@@ -5,6 +5,7 @@ export const createReyzume = mutation({
   args: {
     title: v.string(),
     folderId: v.optional(v.id("folders")),
+    content: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -18,7 +19,7 @@ export const createReyzume = mutation({
       title: args.title,
       userId,
       folderId: args.folderId,
-      content: "",
+      content: args.content || "",
       isArchived: false,
       isPublished: false,
       fontFamily: "Times New Roman, Times, serif",
