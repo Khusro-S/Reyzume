@@ -1,0 +1,10 @@
+# Force redirect from Netlify subdomain to custom domain
+[[redirects]]
+  from = "https://reyzume.netlify.app/*"
+  to = "https://reyzume.com/:splat"
+  status = 301
+  force = true
+
+# Ensure Next.js handles other routes
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
