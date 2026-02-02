@@ -19,9 +19,14 @@ import { cn } from "@/lib/utils";
 interface TitleProps {
   initialData: Doc<"reyzumes">;
   variant?: "card" | "navbar";
+  isReadOnly?: boolean;
 }
 
-export default function Title({ initialData, variant = "card" }: TitleProps) {
+export default function Title({
+  initialData,
+  variant = "card",
+  isReadOnly = false,
+}: TitleProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
   const textSpanRef = useRef<HTMLSpanElement>(null);
@@ -39,7 +44,7 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
 
   const update = useMutation(api.reyzumes.updateReyzume);
 
-  const isEditing = editingTitleId === initialData._id;
+  const isEditing = !isReadOnly && editingTitleId === initialData._id;
   // Determine what to display: if this document is being edited, use store value, otherwise use initialData
   const displayTitle =
     editingTitleId === initialData._id
@@ -111,6 +116,7 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
   };
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isReadOnly) return;
     updateValue(event.target.value);
   };
 
@@ -125,6 +131,7 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
     e.stopPropagation();
   };
   const enableEditing = () => {
+    if (isReadOnly) return;
     if (!isEditing) {
       const { setEditing } = useTitle.getState();
       setEditing(initialData._id, initialData.title || "Untitled");
@@ -136,18 +143,43 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
 
   // Navbar variant
   if (variant === "navbar") {
+    // Read-only navbar, show as plain text
+    if (isReadOnly) {
+      return (
+        <div className="w-full text-foreground cursor-" onClick={handleClick}>
+          <TooltipProvider>
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <span
+                  ref={textSpanRef}
+                  className="block truncate font-medium text-lg sm:text-xl md:text-2xl px-3 py-2"
+                >
+                  {displayTitle}
+                  {/* to prevent safari/browser default tooltip */}
+                  <div></div>
+                </span>
+              </TooltipTrigger>
+              {isTruncated && (
+                <TooltipContent>
+                  <p className="max-w-75 w-full wrap-break-word">
+                    {displayTitle}
+                  </p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      );
+    }
+
     return (
       <div className="w-full text-foreground" onClick={handleClick}>
-        {/* {!!initialData.icon && <p>{initialData.icon}</p>} */}
         <Input
           ref={inputRef}
           onTouchEnd={(e) => {
             e.currentTarget.focus();
           }}
-          //   onClick={enableInput}
-          // onClick={handleClick}
           onBlur={() => {
-            // Delay blur to allow click events to complete
             setTimeout(() => {
               disableInput();
             }, 150);
@@ -157,20 +189,22 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
           value={displayTitle}
           className={cn(
             "focus-visible:ring-transparent w-full truncate font-medium text-lg sm:text-xl md:text-2xl",
-            isEditing ? "" : "border-none shadow-none"
+            isEditing ? "" : "border-none shadow-none",
           )}
           onClick={enableEditing}
         />
       </div>
     );
   }
+
+  // Card variant
   return (
     <div
       className="w-full font-medium text-foreground text-center truncate"
       onClick={handleClick}
     >
       {/* {!!initialData.icon && <p>{initialData.icon}</p>} */}
-      {isEditing ? (
+      {isEditing && !isReadOnly ? (
         <Input
           ref={inputRef}
           //   onClick={enableInput}
@@ -206,7 +240,7 @@ export default function Title({ initialData, variant = "card" }: TitleProps) {
             </TooltipTrigger>
             {isTruncated && (
               <TooltipContent>
-                <p className="max-w-[300px] w-full wrap-break-word">
+                <p className="max-w-75 w-full wrap-break-word">
                   {displayTitle}
                 </p>
               </TooltipContent>

@@ -4,7 +4,7 @@ import { temporal, TemporalState } from "zundo";
 import { shallow } from "zustand/shallow";
 import { useStore } from "zustand";
 
-import { generateId } from "./helpers";
+import { generateId, sanitizeSectionContent } from "./helpers";
 import {
   getDefaultSections,
   getSectionDefaultContent,
@@ -57,7 +57,14 @@ export const useReyzumeStore = create<ReyzumeStore>()(
         },
 
         getSectionsAsJson: () => {
-          return JSON.stringify(get().sections);
+          // return JSON.stringify(get().sections);
+          const sections = get().sections;
+          // Sanitize HTML content (strip trailing empty paragraphs from lists)
+          const sanitizedSections = sections.map((section) => ({
+            ...section,
+            content: sanitizeSectionContent(section.content),
+          }));
+          return JSON.stringify(sanitizedSections);
         },
 
         // ✅ TRACKED: Add section

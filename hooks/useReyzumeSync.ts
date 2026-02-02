@@ -64,14 +64,14 @@ export function useReyzumeSync(reyzumeId: Id<"reyzumes">) {
     if (!hasLoadedRef.current) {
       // First debounce after loading - mark as loaded and set baseline
       hasLoadedRef.current = true;
-      const currentContent = JSON.stringify(debouncedSections);
+      const currentContent = getSectionsAsJson();
       if (!lastSavedContentRef.current) {
         lastSavedContentRef.current = currentContent;
       }
       return;
     }
 
-    const currentContent = JSON.stringify(debouncedSections);
+    const currentContent = getSectionsAsJson();
 
     if (currentContent === lastSavedContentRef.current) return;
 
@@ -89,7 +89,14 @@ export function useReyzumeSync(reyzumeId: Id<"reyzumes">) {
     };
 
     save();
-  }, [debouncedSections, updateContent, reyzumeId, markClean, setIsSaving]);
+  }, [
+    debouncedSections,
+    updateContent,
+    reyzumeId,
+    markClean,
+    setIsSaving,
+    getSectionsAsJson,
+  ]);
 
   // Manual save function
   const saveNow = useCallback(async () => {

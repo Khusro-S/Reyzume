@@ -30,7 +30,7 @@ export function SkillsSection({ section }: SkillsSectionProps) {
   return (
     <div>
       <SectionHeader
-        title="Skills & Interests"
+        title={content.title}
         onAdd={() => addSectionItem(section.id)}
       />
       <SortableItemList

@@ -239,7 +239,11 @@ export function RichTextEditor({
           "[&_li]:pl-1",
           // Paragraph spacing
           "[&_p]:my-0",
-          className
+          // Hide trailing empty paragraph after bullet/ordered lists (Tiptap artifact)
+          "[&_ul+p:empty]:hidden [&_ol+p:empty]:hidden",
+          "[&_ul+p:has(br:only-child)]:hidden [&_ol+p:has(br:only-child)]:hidden",
+          "[&_ul+p:last-child:has(br:only-child)]:hidden [&_ol+p:last-child:has(br:only-child)]:hidden",
+          className,
         )}
       />
     </>

@@ -10,11 +10,15 @@ import { SectionControls } from "../shared/SectionControls";
 
 interface DraggableSectionBlockProps {
   section: Section;
+  isBeingDragged?: boolean;
 }
 
-export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
+export function DraggableSectionBlock({
+  section,
+  isBeingDragged = false,
+}: DraggableSectionBlockProps) {
   const toggleVisibility = useReyzumeStore(
-    (state) => state.toggleSectionVisibility
+    (state) => state.toggleSectionVisibility,
   );
 
   const removeSection = useReyzumeStore((state) => state.removeSection);
@@ -30,8 +34,10 @@ export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
+    // Disable transition on the dragged item to prevent flicker
+    transition: isDragging ? undefined : transition,
+    // Hide the original element when it's being dragged (overlay shows instead)
+    opacity: isBeingDragged ? 0 : 1,
   };
 
   return (
@@ -39,10 +45,9 @@ export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
       ref={setNodeRef}
       data-section-id={section.id}
       style={style}
-      //   className="relative group border border-transparent hover:border-border rounded-lg p-3 transition-all print:break-inside-avoid"
       className={cn(
         "relative group transition-all print:break-inside-avoid",
-        !section.isVisible && "opacity-50"
+        !section.isVisible && "opacity-50",
       )}
     >
       {/* Drag handle */}
@@ -56,7 +61,6 @@ export function DraggableSectionBlock({ section }: DraggableSectionBlockProps) {
 
       {/* Section controls (visibility toggle, delete) */}
       <SectionControls
-        // sectionId={section.id}
         sectionType={section.type}
         isVisible={section.isVisible}
         onToggleVisibility={() => toggleVisibility(section.id)}

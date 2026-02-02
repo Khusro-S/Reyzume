@@ -18,7 +18,7 @@ export function SummarySection({ section }: SummarySectionProps) {
 
   return (
     <div>
-      <SectionHeader title="Summary" />
+      <SectionHeader title={content.title} />
       <EditableText
         value={content.text}
         onChange={(val) => updateSection(section.id, { text: val })}

@@ -104,26 +104,32 @@ export function getSectionDefaultContent(
       } as HeaderContent;
     case "summary":
       return {
+        title: "Summary",
         text: "",
       } as SummaryContent;
     case "experience":
       return {
+        title: "Experience",
         items: [getSectionDefaultItem("experience") as ExperienceItem],
       } as ExperienceContent;
     case "education":
       return {
+        title: "Education",
         items: [getSectionDefaultItem("education") as EducationItem],
       } as EducationContent;
     case "skills":
       return {
+        title: "Skills & Interests",
         items: [getSectionDefaultItem("skills") as SkillItem],
       } as SkillsContent;
     case "projects":
       return {
+        title: "Projects",
         items: [getSectionDefaultItem("projects") as ProjectItem],
       } as ProjectsContent;
     case "certifications":
       return {
+        title: "Certifications",
         items: [getSectionDefaultItem("certifications") as CertificationItem],
       } as CertificationsContent;
     case "custom":

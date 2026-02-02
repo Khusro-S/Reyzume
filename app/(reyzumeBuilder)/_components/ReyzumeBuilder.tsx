@@ -1,7 +1,7 @@
-// app/(reyzumeBuilder)/_components/ReyzumeBuilder.tsx
 "use client";
 
 import { useReyzumeSections } from "@/hooks/useReyzumeSections";
+import { createPortal } from "react-dom";
 import {
   useState,
   useEffect,
@@ -17,6 +17,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
 } from "@dnd-kit/core";
 import {
   restrictToParentElement,
@@ -46,6 +48,7 @@ import {
 } from "@/lib/fonts";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { SectionOverlay } from "./draggable/SectionOverlay";
 
 const A4_HEIGHT_MM = 297;
 const A4_WIDTH_MM = 210;
@@ -60,6 +63,8 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
   const params = useParams();
   const reyzumeId = params.reyzumeId as Id<"reyzumes">;
 
+  // Remove isMounted state and effect; check for document in render instead
+
   const { isLoading } = useReyzumeSync(reyzumeId);
   const { getZoom } = useZoomStore();
   const { reorderSections, visibleSections } = useReyzumeSections();
@@ -71,6 +76,7 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
 
   const [pageCount, setPageCount] = useState(1);
   const [showOverflowWarning, setShowOverflowWarning] = useState(false);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
 
   const zoom = getZoom(reyzumeId);
   const scale = zoom / 100;
@@ -81,11 +87,11 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
 
   const marginVertical = getMarginValue(
     reyzume?.marginVertical,
-    DEFAULT_MARGIN_VERTICAL
+    DEFAULT_MARGIN_VERTICAL,
   );
   const marginHorizontal = getMarginValue(
     reyzume?.marginHorizontal,
-    DEFAULT_MARGIN_HORIZONTAL
+    DEFAULT_MARGIN_HORIZONTAL,
   );
 
   useImperativeHandle(ref, () => ({
@@ -119,17 +125,22 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const fixedSections = visibleSections.filter(
-    (s) => s.type === "header" || s.type === "summary"
+    (s) => s.type === "header" || s.type === "summary",
   );
   const draggableSections = visibleSections.filter(
-    (s) => s.type !== "header" && s.type !== "summary"
+    (s) => s.type !== "header" && s.type !== "summary",
   );
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveDragId(null);
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = draggableSections.findIndex((s) => s.id === active.id);
@@ -137,21 +148,29 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
       const reorderedDraggable = arrayMove(
         draggableSections,
         oldIndex,
-        newIndex
+        newIndex,
       );
       const newSections = [...fixedSections, ...reorderedDraggable].map(
         (section, index) => ({
           ...section,
           order: index,
-        })
+        }),
       );
       reorderSections(newSections);
     }
   };
 
+  const handleDragCancel = () => {
+    setActiveDragId(null);
+  };
+
+  const activeSection = activeDragId
+    ? draggableSections.find((s) => s.id === activeDragId)
+    : null;
+
   if (isLoading || !reyzume) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
@@ -209,7 +228,10 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+              // autoScroll={false}
               modifiers={[
                 restrictToVerticalAxis,
                 restrictToParentElement,
@@ -222,10 +244,53 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
               >
                 <div className="space-y-2">
                   {draggableSections.map((section) => (
-                    <SectionBlock key={section.id} section={section} />
+                    <SectionBlock
+                      key={section.id}
+                      section={section}
+                      isBeingDragged={section.id === activeDragId}
+                    />
                   ))}
                 </div>
               </SortableContext>
+
+              {/* Why portal DragOverlay to document.body?
+               - The resume canvas uses `transform: scale(...)` for zoom.
+               - dnd-kit DragOverlay is `position: fixed`. Inside a transformed tree, “fixed” can
+              behave like it’s relative to that transformed element instead of
+              the real viewport.
+              - That caused offset/jumping/scroll weirdness while dragging.
+              - Portaling to `document.body` makes the overlay truly viewport-based again.
+              - Because the overlay is now outside the canvas, it won’t inherit resume
+              styles, so we re-apply zoom + typography (scale/fontFamily/fontSize/lineHeight)
+              on the overlay wrapper. */}
+
+              {/* Drag overlay - renders a lightweight preview while dragging */}
+              {activeSection &&
+              typeof window !== "undefined" &&
+              typeof document !== "undefined"
+                ? createPortal(
+                    <DragOverlay
+                      adjustScale={false}
+                      dropAnimation={null}
+                      zIndex={10}
+                      style={{ pointerEvents: "none" }}
+                    >
+                      {activeSection ? (
+                        <div
+                          style={{
+                            transform: `scale(${scale})`,
+                            transformOrigin: "top left",
+                            fontFamily,
+                            fontSize,
+                          }}
+                        >
+                          <SectionOverlay section={activeSection} />
+                        </div>
+                      ) : null}
+                    </DragOverlay>,
+                    document.body,
+                  )
+                : null}
             </DndContext>
           </div>
         </div>

@@ -23,10 +23,12 @@ import {
 interface NavbarReyzumeProps {
   reyzume: Doc<"reyzumes">;
   getContentRef: () => HTMLDivElement | null;
+  isReadOnly?: boolean;
 }
 export default function NavbarReyzume({
   reyzume,
   getContentRef,
+  isReadOnly = false,
 }: NavbarReyzumeProps) {
   const router = useRouter();
   const [isPrinting, setIsPrinting] = useState(false);
@@ -85,7 +87,11 @@ export default function NavbarReyzume({
             </Button>
 
             <div className="min-w-0 max-w-md md:max-w-lg w-full">
-              <Title initialData={reyzume} variant="navbar" />
+              <Title
+                initialData={reyzume}
+                variant="navbar"
+                isReadOnly={isReadOnly}
+              />
             </div>
           </div>
 
