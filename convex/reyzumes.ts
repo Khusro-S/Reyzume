@@ -140,7 +140,8 @@ export const updateReyzume = mutation({
 
 // Get a single reyzume by ID
 export const getReyzumeById = query({
-  args: { id: v.id("reyzumes") },
+  // args: { id: v.id("reyzumes") },
+  args: { id: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -148,15 +149,32 @@ export const getReyzumeById = query({
       return null;
     }
 
-    const reyzume = await ctx.db.get(args.id);
+    // const reyzume = await ctx.db.get(args.id);
+    // if (!reyzume) {
+    //   // throw new Error("Reyzume not found");
+    //   return null;
+    // }
+
+    // if (reyzume.userId !== identity.subject) {
+    //   // throw new Error("Unauthorized");
+    //   return null;
+    // }
+
+    // return reyzume;
+    // Safely validate and normalize the ID - returns null if invalid
+    const normalizedId = ctx.db.normalizeId("reyzumes", args.id);
+    if (!normalizedId) {
+      return null;
+    }
+
+    const reyzume = await ctx.db.get(normalizedId);
 
     if (!reyzume) {
-      throw new Error("Reyzume not found");
-      // return null;
+      return null;
     }
 
     if (reyzume.userId !== identity.subject) {
-      throw new Error("Unauthorized");
+      return null;
     }
 
     return reyzume;
@@ -219,6 +237,65 @@ export const deleteReyzume = mutation({
   },
 });
 
+// Delete multiple reyzumes permanently
+export const deleteMultipleReyzumes = mutation({
+  args: { ids: v.array(v.id("reyzumes")) },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const results = await Promise.all(
+      args.ids.map(async (id) => {
+        const existingReyzume = await ctx.db.get(id);
+
+        if (!existingReyzume) {
+          return { id, success: false, error: "Not found" };
+        }
+
+        if (existingReyzume.userId !== identity.subject) {
+          return { id, success: false, error: "Unauthorized" };
+        }
+
+        await ctx.db.delete(id);
+        return { id, success: true };
+      })
+    );
+
+    return results;
+  },
+});
+// Archive multiple resumes
+export const archiveMultipleReyzumes = mutation({
+  args: {
+    ids: v.array(v.id("reyzumes")),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const userId = identity.subject;
+
+    for (const id of args.ids) {
+      const reyzume = await ctx.db.get(id);
+
+      if (!reyzume) {
+        continue; // Skip if not found
+      }
+
+      if (reyzume.userId !== userId) {
+        throw new Error("Unauthorized");
+      }
+
+      await ctx.db.patch(id, { isArchived: true });
+    }
+
+    return { success: true, count: args.ids.length };
+  },
+});
 // Soft delete (archive) a reyzume
 export const archiveReyzume = mutation({
   args: { id: v.id("reyzumes") },
@@ -272,6 +349,38 @@ export const restoreReyzume = mutation({
     });
 
     return { success: true };
+  },
+});
+
+
+// Restore Multiple Resumes
+export const restoreMultipleReyzumes = mutation({
+  args: {
+    ids: v.array(v.id("reyzumes")),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const userId = identity.subject;
+
+    for (const id of args.ids) {
+      const reyzume = await ctx.db.get(id);
+
+      if (!reyzume) {
+        continue; // Skip if not found
+      }
+
+      if (reyzume.userId !== userId) {
+        throw new Error("Unauthorized");
+      }
+
+      await ctx.db.patch(id, { isArchived: false });
+    }
+
+    return { success: true, count: args.ids.length };
   },
 });
 

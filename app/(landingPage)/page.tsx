@@ -7,6 +7,8 @@ import { HowItWorks } from "@/app/(landingPage)/_components/HowItWorks";
 // import { Testimonials } from "@/app/(landingPage)/_components/Testimonials";
 import WhatYouGet from "./_components/WhatYouGet";
 
+export const dynamic = "force-static";
+
 export default function Home() {
   return (
     <>

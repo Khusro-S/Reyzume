@@ -31,7 +31,7 @@ export function ExperienceSection({ section }: ExperienceSectionProps) {
   return (
     <div>
       <SectionHeader
-        title="Experience"
+        title={content.title}
         onAdd={() => addSectionItem(section.id)}
       >
         {/* <div className="flex items-center gap-2 group/title"> */}

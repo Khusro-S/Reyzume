@@ -41,7 +41,10 @@ export function CustomSection({ section }: CustomSectionProps) {
 
   return (
     <div>
-      <SectionHeader onAdd={() => addSectionItem(section.id)}>
+      <SectionHeader
+        title={content.title}
+        onAdd={() => addSectionItem(section.id)}
+      >
         {/* <div className="flex items-center gap-2 group/title"> */}
         <div className="shrink-0">
           <EditableText

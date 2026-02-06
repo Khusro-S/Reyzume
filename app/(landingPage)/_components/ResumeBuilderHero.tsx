@@ -126,7 +126,7 @@ export default function ResumeBuilderHero() {
         </div>
 
         {/* A4 Page Preview - Reduced padding and min-height */}
-        <div className="p-8 bg-linear-to-br from-white/50 to-gray-200/50 flex items-center justify-center min-h-[200px]">
+        <div className="p-8 bg-linear-to-br from-white/50 to-gray-200/50 flex items-center justify-center min-h-50">
           <div className="w-full aspect-[1/1.414] bg-white rounded-md shadow-lg p-4 relative overflow-hidden">
             {/* Resume Content - Smaller spacing */}
             <div className="relative space-y-3">

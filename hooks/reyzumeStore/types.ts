@@ -16,6 +16,7 @@ export interface HeaderContent {
 }
 
 export interface SummaryContent {
+  title: string;
   text: string;
 }
 
@@ -31,6 +32,7 @@ export interface ExperienceItem {
 }
 
 export interface ExperienceContent {
+  title: string;
   items: ExperienceItem[];
 }
 
@@ -46,6 +48,7 @@ export interface EducationItem {
 }
 
 export interface EducationContent {
+  title: string;
   items: EducationItem[];
 }
 
@@ -56,6 +59,7 @@ export interface SkillItem {
 }
 
 export interface SkillsContent {
+  title: string;
   items: SkillItem[];
 }
 
@@ -69,6 +73,7 @@ export interface ProjectItem {
 }
 
 export interface ProjectsContent {
+  title: string;
   items: ProjectItem[];
 }
 
@@ -81,6 +86,7 @@ export interface CertificationItem {
 }
 
 export interface CertificationsContent {
+  title: string;
   items: CertificationItem[];
 }
 

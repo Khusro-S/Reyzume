@@ -31,7 +31,7 @@ export function EducationSection({ section }: EducationSectionProps) {
   return (
     <div>
       <SectionHeader
-        title="Education"
+        title={content.title}
         onAdd={() => addSectionItem(section.id)}
       />
       <SortableItemList

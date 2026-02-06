@@ -19,14 +19,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Link from "next/link";
 
 interface NavbarReyzumeProps {
   reyzume: Doc<"reyzumes">;
   getContentRef: () => HTMLDivElement | null;
+  isReadOnly?: boolean;
 }
 export default function NavbarReyzume({
   reyzume,
   getContentRef,
+  isReadOnly = false,
 }: NavbarReyzumeProps) {
   const router = useRouter();
   const [isPrinting, setIsPrinting] = useState(false);
@@ -51,9 +54,9 @@ export default function NavbarReyzume({
       console.error("Print error at", errorLocation, ":", error);
     },
   });
-  const handleBack = () => {
-    router.push("/reyzumes");
-  };
+  // const handleBack = () => {
+  //   router.push("/reyzumes");
+  // };
 
   const handleDownload = () => {
     // Update the ref right before printing to ensure we have the latest element
@@ -74,18 +77,25 @@ export default function NavbarReyzume({
           {/* Left: Back button + Title */}
           <div className="flex items-center gap-1 flex-1 min-w-0">
             <Button
+              asChild
               variant="ghost"
               size="sm"
-              onClick={handleBack}
+              // onClick={handleBack}
               //   className="flex items-center gap-2 hover:bg-accent"
               className="hover:bg-accent p-0"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <Link href="/reyzumes" prefetch>
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
               {/* <span className="hidden sm:inline">Back</span> */}
             </Button>
 
             <div className="min-w-0 max-w-md md:max-w-lg w-full">
-              <Title initialData={reyzume} variant="navbar" />
+              <Title
+                initialData={reyzume}
+                variant="navbar"
+                isReadOnly={isReadOnly}
+              />
             </div>
           </div>
 

@@ -8,14 +8,16 @@ import { SectionControls } from "./shared/SectionControls";
 interface SectionBlockProps {
   section: Section;
   isDraggable?: boolean;
+  isBeingDragged?: boolean;
 }
 
 export function SectionBlock({
   section,
   isDraggable = true,
+  isBeingDragged = false,
 }: SectionBlockProps) {
   const toggleVisibility = useReyzumeStore(
-    (state) => state.toggleSectionVisibility
+    (state) => state.toggleSectionVisibility,
   );
   const removeSection = useReyzumeStore((state) => state.removeSection);
 
@@ -37,5 +39,7 @@ export function SectionBlock({
     );
   }
 
-  return <DraggableSectionBlock section={section} />;
+  return (
+    <DraggableSectionBlock section={section} isBeingDragged={isBeingDragged} />
+  );
 }

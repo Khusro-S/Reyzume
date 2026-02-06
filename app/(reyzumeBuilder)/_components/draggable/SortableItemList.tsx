@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -9,6 +9,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -20,6 +22,9 @@ import {
   restrictToVerticalAxis,
   restrictToParentElement,
 } from "@dnd-kit/modifiers";
+import { createPortal } from "react-dom";
+import { ItemOverlay } from "./Overlays";
+import { useOverlayStyle } from "@/components/providers/OverlayStyleContext";
 
 interface SortableItemListProps<T extends { id: string }> {
   items: T[];
@@ -34,6 +39,8 @@ export function SortableItemList<T extends { id: string }>({
   children,
   className,
 }: SortableItemListProps<T>) {
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const overlayStyle = useOverlayStyle();
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -42,10 +49,15 @@ export function SortableItemList<T extends { id: string }>({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveDragId(null);
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
@@ -56,11 +68,48 @@ export function SortableItemList<T extends { id: string }>({
     }
   };
 
+  const handleDragCancel = () => {
+    setActiveDragId(null);
+  };
+
+  const activeItem = activeDragId
+    ? items.find((item) => item.id === activeDragId)
+    : null;
+
+  const overlay = (
+    <DragOverlay
+      adjustScale={false}
+      dropAnimation={null}
+      zIndex={100}
+      style={{ pointerEvents: "none" }}
+    >
+      {activeItem ? (
+        <div
+          style={
+            overlayStyle
+              ? {
+                  transform: `scale(${overlayStyle.scale})`,
+                  transformOrigin: "top left",
+                  fontFamily: overlayStyle.fontFamily,
+                  fontSize: overlayStyle.fontSize,
+                  maxWidth: 500,
+                }
+              : undefined
+          }
+        >
+          <ItemOverlay item={activeItem as Record<string, unknown>} />
+        </div>
+      ) : null}
+    </DragOverlay>
+  );
+
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
     >
       <SortableContext
@@ -69,6 +118,13 @@ export function SortableItemList<T extends { id: string }>({
       >
         <div className={className}>{children}</div>
       </SortableContext>
+
+      {/* Portal to document.body to avoid transform: scale() issues */}
+      {activeItem &&
+      typeof window !== "undefined" &&
+      typeof document !== "undefined"
+        ? createPortal(overlay, document.body)
+        : overlay}
     </DndContext>
   );
 }
