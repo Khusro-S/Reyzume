@@ -4,7 +4,7 @@ import ReyzumeCard from "../../_components/ReyzumeCard";
 
 interface ReyzumeGridProps {
   reyzumes: Doc<"reyzumes">[];
-  onResumeClick: (id: string) => void;
+  // onResumeClick: (id: string) => void;
   onRename?: (reyzume: Doc<"reyzumes">, e: React.MouseEvent) => void;
   onDuplicate?: (id: string, e: React.MouseEvent) => void;
   onDownload?: (id: string, e: React.MouseEvent) => void;
@@ -18,7 +18,7 @@ interface ReyzumeGridProps {
 
 export default function ReyzumeGrid({
   reyzumes,
-  onResumeClick,
+  // onResumeClick,
   onRename,
   onDuplicate,
   onDownload,
@@ -41,7 +41,7 @@ export default function ReyzumeGrid({
         <ReyzumeCard
           key={reyzume._id}
           reyzume={reyzume}
-          onResumeClick={onResumeClick}
+          // onResumeClick={onResumeClick}
           onRename={onRename}
           onDuplicate={onDuplicate}
           onDownload={onDownload}

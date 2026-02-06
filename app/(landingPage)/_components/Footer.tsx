@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { Mail } from "lucide-react";
 import { toast } from "sonner";
+import ReyzumeLogo from "@/components/ReyzumeLogo";
 
 export function Footer() {
   return (
@@ -12,12 +13,8 @@ export function Footer() {
         {/* Top Section: Brand + Social Links */}
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="text-center md:text-left">
-            <p className="text-base md:text-lg font-semibold text-[#111827]">
-              Reyzume{" "}
-              <span className="text-xs text-[#6B7280]">
-                © {new Date().getFullYear()}
-              </span>
-            </p>
+            <ReyzumeLogo variant="footer" />
+
             <p className="text-xs text-[#6B7280] mt-1">
               Built with ❤️ by{" "}
               <a
@@ -71,7 +68,7 @@ export function Footer() {
                   toast.success("Email copied to clipboard");
                 } catch {
                   toast.error(
-                    "Couldn't copy email — please copy manually: " + email
+                    "Couldn't copy email — please copy manually: " + email,
                   );
                 }
               }}

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { FileX, Home, ArrowLeft } from "lucide-react";
+import ReyzumeLogo from "@/components/ReyzumeLogo";
 
 export default function NotFound() {
   return (
@@ -140,12 +141,15 @@ export default function NotFound() {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="mt-12"
         >
-          <Link
+          {/* Reyzume */}
+          <ReyzumeLogo variant="footer" />
+
+          {/* <Link
             href="/"
             className="text-xl font-bold text-primary hover:opacity-80 transition-opacity"
           >
             Reyzume
-          </Link>
+          </Link> */}
         </motion.div>
       </motion.div>
     </div>

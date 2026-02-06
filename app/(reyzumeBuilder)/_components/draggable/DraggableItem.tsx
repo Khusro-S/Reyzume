@@ -24,7 +24,8 @@ export function DraggableItem({ id, children, className }: DraggableItemProps) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? undefined : transition,
+    opacity: isDragging ? 0 : 1,
   };
 
   return (
@@ -32,11 +33,7 @@ export function DraggableItem({ id, children, className }: DraggableItemProps) {
       ref={setNodeRef}
       data-item-id={id}
       style={style}
-      className={cn(
-        "relative group/item",
-        isDragging && "opacity-50 z-50",
-        className
-      )}
+      className={cn("relative group/item", isDragging && "z-50", className)}
     >
       {/* Drag handle */}
       <button

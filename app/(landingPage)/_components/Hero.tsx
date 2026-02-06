@@ -40,8 +40,10 @@ export function Hero() {
             export-ready PDFs, all with automatic cloud sync.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row">
-            <Button size="lg">
-              <Link href="/signin">Start Building</Link>
+            <Button size="lg" asChild>
+              <Link href="/signin" prefetch>
+                Start Building
+              </Link>
             </Button>
           </div>
         </motion.div>

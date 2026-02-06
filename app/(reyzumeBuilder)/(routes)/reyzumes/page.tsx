@@ -217,9 +217,9 @@ export default function ReyzumesPage() {
     });
   };
 
-  const handleResumeClick = (reyzumeId: string) => {
-    router.push(`/reyzumes/${reyzumeId}`);
-  };
+  // const handleResumeClick = (reyzumeId: string) => {
+  //   router.push(`/reyzumes/${reyzumeId}`);
+  // };
 
   const handleRename = (reyzume: Doc<"reyzumes">, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -396,7 +396,7 @@ export default function ReyzumesPage() {
           {activeReyzumes.length > 0 && (
             <ReyzumeGrid
               reyzumes={activeReyzumes}
-              onResumeClick={handleResumeClick}
+              // onResumeClick={handleResumeClick}
               onRename={handleRename}
               onDuplicate={handleDuplicate}
               onDownload={handleDownload}
@@ -467,7 +467,7 @@ export default function ReyzumesPage() {
 
                 <ReyzumeGrid
                   reyzumes={archivedReyzumes}
-                  onResumeClick={handleResumeClick}
+                  // onResumeClick={handleResumeClick}
                   onRestore={handleRestore}
                   onDelete={handleDeleteClick}
                   isSelectionMode={isArchivedSelectionMode}

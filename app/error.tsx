@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import { useEffect } from "react";
+import ReyzumeLogo from "@/components/ReyzumeLogo";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -157,12 +158,7 @@ export default function Error({ error }: ErrorProps) {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="mt-12"
         >
-          <Link
-            href="/"
-            className="text-xl font-bold text-primary hover:opacity-80 transition-opacity"
-          >
-            Reyzume
-          </Link>
+          <ReyzumeLogo variant="footer" />
         </motion.div>
       </motion.div>
     </div>

@@ -20,10 +20,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import Link from "next/link";
 
 interface ReyzumeCardProps {
   reyzume: Doc<"reyzumes">;
-  onResumeClick: (id: string) => void;
+  // onResumeClick: (id: string) => void;
   onRename?: (reyzume: Doc<"reyzumes">, e: React.MouseEvent) => void;
   onDuplicate?: (id: string, e: React.MouseEvent) => void;
   onDownload?: (id: string, e: React.MouseEvent) => void;
@@ -38,7 +39,7 @@ interface ReyzumeCardProps {
 
 export default function ReyzumeCard({
   reyzume,
-  onResumeClick,
+  // onResumeClick,
   onRename,
   onDuplicate,
   onDownload,
@@ -49,11 +50,11 @@ export default function ReyzumeCard({
   isSelected = false,
   onSelectionChange,
 }: ReyzumeCardProps) {
+  const href = `/reyzumes/${reyzume._id}`;
+
   const handleCardClick = () => {
     if (isSelectionMode && onSelectionChange) {
       onSelectionChange(reyzume._id, !isSelected);
-    } else {
-      onResumeClick(reyzume._id);
     }
   };
 
@@ -61,15 +62,15 @@ export default function ReyzumeCard({
     e.stopPropagation();
     onSelectionChange?.(reyzume._id, !isSelected);
   };
-  return (
-    <div
-      onClick={handleCardClick}
-      className={cn(
-        "group relative bg-white border border-gray-200 rounded-lg px-4 py-5 hover:shadow-lg hover:border-primary/50 transition-all ease-initial duration-200 cursor-pointer flex flex-col justify-center items-center gap-3",
-        reyzume.isArchived && "opacity-60",
-        isSelected && "border-primary bg-primary/5 shadow-md",
-      )}
-    >
+
+  const cardClassName = cn(
+    "group relative bg-white border border-gray-200 rounded-lg px-4 py-5 hover:shadow-lg hover:border-primary/50 transition-all ease-initial duration-200 cursor-pointer flex flex-col justify-center items-center gap-3",
+    reyzume.isArchived && "opacity-60",
+    isSelected && "border-primary bg-primary/5 shadow-md",
+  );
+
+  const cardContent = (
+    <>
       {/* Selection Checkbox */}
       {isSelectionMode && (
         <div
@@ -119,7 +120,13 @@ export default function ReyzumeCard({
       {/* More Actions Menu - hide in selection mode */}
       {!isSelectionMode && (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuTrigger
+            asChild
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
             <Button
               variant="ghost"
               size="sm"
@@ -177,6 +184,15 @@ export default function ReyzumeCard({
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+    </>
+  );
+  return isSelectionMode ? (
+    <div onClick={handleCardClick} className={cardClassName}>
+      {cardContent}
     </div>
+  ) : (
+    <Link href={href} className={cardClassName}>
+      {cardContent}
+    </Link>
   );
 }
