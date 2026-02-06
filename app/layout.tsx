@@ -32,7 +32,8 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://reyzume.com"),
   icons: {
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon.ico?v=2026",
+    icon: "/favicon.ico?v=2026",
   },
 };
 
