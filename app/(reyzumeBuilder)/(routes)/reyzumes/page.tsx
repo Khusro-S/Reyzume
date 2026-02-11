@@ -77,7 +77,15 @@ export default function ReyzumesPage() {
 
   // Selection handlers for active resumes
   const toggleSelectionMode = () => {
-    setIsSelectionMode(!isSelectionMode);
+    setIsSelectionMode((prev) => {
+      const newValue = !prev;
+      if (newValue) {
+        setIsArchivedSelectionMode(false);
+        setSelectedArchivedIds(new Set());
+      }
+      return newValue;
+    });
+
     setSelectedIds(new Set()); // Clear selection when toggling
   };
 
@@ -94,7 +102,14 @@ export default function ReyzumesPage() {
   };
   // Selection handlers for archived resumes
   const toggleArchivedSelectionMode = () => {
-    setIsArchivedSelectionMode(!isArchivedSelectionMode);
+    setIsArchivedSelectionMode((prev) => {
+      const newValue = !prev;
+      if (newValue) {
+        setIsSelectionMode(false);
+        setSelectedIds(new Set());
+      }
+      return newValue;
+    });
     setSelectedArchivedIds(new Set());
   };
 

@@ -22,7 +22,7 @@ export default function SelectionActionBar({
 }: SelectionActionBarProps) {
   return (
     <div
-      className={`flex items-center justify-between bg-muted/50 rounded-lg px-4 py-3 ${className}`}
+      className={`flex flex-wrap gap-y-1 items-center justify-center sm:justify-between bg-muted/50 rounded-lg px-4 py-3 ${className}`}
     >
       <div className="flex items-center gap-4">
         <span className="text-sm font-medium">{selectedCount} selected</span>

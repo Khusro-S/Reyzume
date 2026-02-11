@@ -64,7 +64,7 @@ export default function ReyzumeCard({
   };
 
   const cardClassName = cn(
-    "group relative bg-white border border-gray-200 rounded-lg px-4 py-5 hover:shadow-lg hover:border-primary/50 transition-all ease-initial duration-200 cursor-pointer flex flex-col justify-center items-center gap-3",
+    "group relative bg-white border border-gray-200 rounded-lg px-4 py-5 hover:shadow-lg hover:border-primary/50 transition-[box-shadow,border-color,transform,opacity] ease-initial duration-200 cursor-pointer flex flex-col justify-center items-center gap-3",
     reyzume.isArchived && "opacity-60",
     isSelected && "border-primary bg-primary/5 shadow-md",
   );

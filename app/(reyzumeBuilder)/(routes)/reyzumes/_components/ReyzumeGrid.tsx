@@ -32,26 +32,41 @@ export default function ReyzumeGrid({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6",
+        "flex flex-wrap gap-6 overflow-x-visible",
         reyzumes.length > 3 && "max-h-130 overflow-y-auto pr-2",
         "scroll-smooth scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent",
       )}
+      // style={{ willChange: "contents" }}
     >
       {reyzumes.map((reyzume) => (
-        <ReyzumeCard
+        <div
           key={reyzume._id}
-          reyzume={reyzume}
-          // onResumeClick={onResumeClick}
-          onRename={onRename}
-          onDuplicate={onDuplicate}
-          onDownload={onDownload}
-          onArchive={onArchive}
-          onRestore={onRestore}
-          onDelete={onDelete}
-          isSelectionMode={isSelectionMode}
-          isSelected={selectedIds.has(reyzume._id)}
-          onSelectionChange={onSelectionChange}
-        />
+          className={cn(
+            // Base: full width (1 col)
+            "w-full",
+            // sm: 2 columns → (100% - gap) / 2
+            "sm:w-[calc(50%-0.75rem)]",
+            // lg: 3 columns → (100% - 2*gap) / 3
+            "lg:w-[calc(33.333%-1rem)]",
+            // xl: 4 columns → (100% - 3*gap) / 4
+            "xl:w-[calc(25%-1.125rem)]",
+          )}
+        >
+          <ReyzumeCard
+            key={reyzume._id}
+            reyzume={reyzume}
+            // onResumeClick={onResumeClick}
+            onRename={onRename}
+            onDuplicate={onDuplicate}
+            onDownload={onDownload}
+            onArchive={onArchive}
+            onRestore={onRestore}
+            onDelete={onDelete}
+            isSelectionMode={isSelectionMode}
+            isSelected={selectedIds.has(reyzume._id)}
+            onSelectionChange={onSelectionChange}
+          />
+        </div>
       ))}
     </div>
   );
