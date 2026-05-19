@@ -6,6 +6,7 @@ import {
   useReyzumeStore,
 } from "@/hooks/useReyzumeStore";
 import { EditableText } from "../shared/EditableText";
+import { SectionFlow } from "../shared/LayoutTiers";
 import { SectionHeader } from "../shared/SectionHeader";
 
 interface SummarySectionProps {
@@ -17,7 +18,7 @@ export function SummarySection({ section }: SummarySectionProps) {
   const updateSection = useReyzumeStore((state) => state.updateSection);
 
   return (
-    <div>
+    <SectionFlow>
       <SectionHeader title={content.title} />
       <EditableText
         value={content.text}
@@ -27,6 +28,6 @@ export function SummarySection({ section }: SummarySectionProps) {
         placeholder="Add your professional summary..."
         multiline
       />
-    </div>
+    </SectionFlow>
   );
 }

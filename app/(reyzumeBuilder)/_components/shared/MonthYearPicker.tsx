@@ -96,23 +96,22 @@ export function MonthYearPicker({
     return MONTHS.indexOf(monthName);
   }, [value, year]);
 
-  // Reset year picker when popover closes
-  React.useEffect(() => {
-    if (!open) {
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) {
       setShowYearPicker(false);
     }
-  }, [open]);
+  };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <button
           className={cn(
-            "inline-flex items-center justify-end gap-1 hover:bg-muted/50 rounded px-1 py-0.5 transition-colors cursor-pointer",
+            "inline-flex items-center justify-end gap-1 hover:bg-muted/50 rounded px-1 py-0 transition-colors cursor-pointer",
             !value && "text-muted-foreground",
             className
           )}
-          style={{ fontSize: "0.9em" }}
         >
           {value || placeholder}
         </button>

@@ -21,8 +21,8 @@ export function DeleteButton({
   className = "",
   size = "sm",
 }: DeleteButtonProps) {
-  const buttonSize = size === "sm" ? "h-6 w-6" : "h-7 w-7";
-  const iconSize = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
+  const buttonSize = size === "sm" ? "h-4 w-4" : "h-7 w-7";
+  const iconSize = size === "sm" ? "h-3 w-3" : "h-4 w-4";
 
   if (disabled) return null;
 

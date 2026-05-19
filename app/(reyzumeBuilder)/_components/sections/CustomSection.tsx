@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Section,
   CustomContent,
@@ -8,11 +7,10 @@ import {
 } from "@/hooks/useReyzumeStore";
 import { EditableText } from "../shared/EditableText";
 import { SectionHeader } from "../shared/SectionHeader";
-import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
 import { DeleteButton } from "../shared/DeleteButton";
 import { SortableItemList } from "../draggable/SortableItemList";
 import { DraggableItem } from "../draggable/DraggableItem";
+import { ItemFlow, SectionFlow } from "../shared/LayoutTiers";
 import { DateRangePicker } from "../shared/DateRangePicker";
 
 interface CustomSectionProps {
@@ -29,18 +27,10 @@ export function CustomSection({ section }: CustomSectionProps) {
     (state) => state.reorderSectionItems
   );
 
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [title, setTitle] = useState(content.title);
-
   const canDelete = content.items.length > 1;
 
-  const handleTitleSave = () => {
-    updateSection(section.id, { title });
-    setIsEditingTitle(false);
-  };
-
   return (
-    <div>
+    <SectionFlow>
       <SectionHeader
         title={content.title}
         onAdd={() => addSectionItem(section.id)}
@@ -50,8 +40,7 @@ export function CustomSection({ section }: CustomSectionProps) {
           <EditableText
             value={content.title}
             onChange={(val) => updateSection(section.id, { title: val })}
-            className="font-semibold"
-            style={{ fontSize: "1.15em" }}
+            className="font-bold"
             selectAllOnFocus
             placeholder="Custom Title"
             maxLength={40}
@@ -61,74 +50,71 @@ export function CustomSection({ section }: CustomSectionProps) {
       <SortableItemList
         items={content.items}
         onReorder={(items) => reorderSectionItems(section.id, items)}
-        className="space-y-4"
       >
         {content.items.map((item) => (
-          <DraggableItem
-            key={item.id}
-            id={item.id}
-            className="space-y-1 group/item"
-          >
-            {/* Title and Dates */}
-            <div className="flex justify-between items-baseline gap-4">
-              <div className="flex gap-1 min-w-0 flex-1">
-                <EditableText
-                  value={item.title}
-                  onChange={(val) =>
-                    updateSectionItem(section.id, item.id, { title: val })
-                  }
-                  className="font-semibold"
-                  placeholder="Title"
-                />
-                {canDelete && (
-                  <DeleteButton
-                    onDelete={() => removeSectionItem(section.id, item.id)}
-                    itemName="section item"
-                    className="md:opacity-0 md:group-hover/item:opacity-100 transition-opacity"
+          <DraggableItem key={item.id} id={item.id} className="group/item">
+            <ItemFlow>
+              {/* Title and Dates */}
+              <div className="flex justify-between items-center gap-4">
+                <div className="flex gap-1 min-w-0 flex-1">
+                  <EditableText
+                    value={item.title}
+                    onChange={(val) =>
+                      updateSectionItem(section.id, item.id, { title: val })
+                    }
+                    className="font-semibold"
+                    placeholder="Title"
                   />
-                )}
+                  {canDelete && (
+                    <DeleteButton
+                      onDelete={() => removeSectionItem(section.id, item.id)}
+                      itemName="section item"
+                      className="md:opacity-0 md:group-hover/item:opacity-100 transition-opacity"
+                    />
+                  )}
+                </div>
+                <div className="shrink-0">
+                  <DateRangePicker
+                    startDate={item.startDate}
+                    endDate={item.endDate}
+                    onStartDateChange={(val) =>
+                      updateSectionItem(section.id, item.id, { startDate: val })
+                    }
+                    onEndDateChange={(val) =>
+                      updateSectionItem(section.id, item.id, { endDate: val })
+                    }
+                    onDelete={() =>
+                      updateSectionItem(section.id, item.id, {
+                        startDate: undefined,
+                        endDate: undefined,
+                      })
+                    }
+                  />
+                </div>
               </div>
-              <div className="shrink-0">
-                <DateRangePicker
-                  startDate={item.startDate}
-                  endDate={item.endDate}
-                  onStartDateChange={(val) =>
-                    updateSectionItem(section.id, item.id, { startDate: val })
-                  }
-                  onEndDateChange={(val) =>
-                    updateSectionItem(section.id, item.id, { endDate: val })
-                  }
-                  onDelete={() =>
-                    updateSectionItem(section.id, item.id, {
-                      startDate: undefined,
-                      endDate: undefined,
-                    })
-                  }
-                />
-              </div>
-            </div>
-            {/* Subtitle */}
-            <EditableText
-              value={item.subtitle || ""}
-              onChange={(val) =>
-                updateSectionItem(section.id, item.id, { subtitle: val })
-              }
-              className="font-medium text-muted-foreground"
-              placeholder="Subtitle"
-            />
-            {/* Description */}
-            <EditableText
-              value={item.description || ""}
-              onChange={(val) =>
-                updateSectionItem(section.id, item.id, { description: val })
-              }
-              className="whitespace-pre-line"
-              placeholder="Description..."
-              multiline
-            />
+              {/* Subtitle */}
+              <EditableText
+                value={item.subtitle || ""}
+                onChange={(val) =>
+                  updateSectionItem(section.id, item.id, { subtitle: val })
+                }
+                className="font-medium text-muted-foreground"
+                placeholder="Subtitle"
+              />
+              {/* Description */}
+              <EditableText
+                value={item.description || ""}
+                onChange={(val) =>
+                  updateSectionItem(section.id, item.id, { description: val })
+                }
+                className="whitespace-pre-line"
+                placeholder="Description..."
+                multiline
+              />
+            </ItemFlow>
           </DraggableItem>
         ))}
       </SortableItemList>
-    </div>
+    </SectionFlow>
   );
 }

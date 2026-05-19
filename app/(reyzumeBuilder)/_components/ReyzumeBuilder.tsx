@@ -2,6 +2,7 @@
 
 import { useReyzumeSections } from "@/hooks/useReyzumeSections";
 import { createPortal } from "react-dom";
+import { ResumeFlow } from "./shared/LayoutTiers";
 import {
   useState,
   useEffect,
@@ -50,6 +51,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { SectionOverlay } from "./draggable/Overlays";
 import { OverlayStyleProvider } from "@/components/providers/OverlayStyleContext";
+import { getLayoutCSSVars } from "@/lib/layoutSpec";
 
 const A4_HEIGHT_MM = 297;
 const A4_WIDTH_MM = 210;
@@ -214,6 +216,7 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
               fontSize,
               lineHeight,
               padding: `${marginVertical}mm ${marginHorizontal}mm`,
+              ...getLayoutCSSVars(),
             }}
           >
             {/* Visual page guides */}
@@ -225,14 +228,16 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
               />
             ))}
 
-            <div ref={contentRef} className="space-y-2">
-              {fixedSections.map((section) => (
-                <SectionBlock
-                  key={section.id}
-                  section={section}
-                  isDraggable={false}
-                />
-              ))}
+            <ResumeFlow ref={contentRef}>
+              <ResumeFlow>
+                {fixedSections.map((section) => (
+                  <SectionBlock
+                    key={section.id}
+                    section={section}
+                    isDraggable={false}
+                  />
+                ))}
+              </ResumeFlow>
 
               <DndContext
                 sensors={sensors}
@@ -251,7 +256,7 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
                   items={draggableSections.map((s) => s.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="space-y-2">
+                  <ResumeFlow>
                     {draggableSections.map((section) => (
                       <SectionBlock
                         key={section.id}
@@ -259,7 +264,7 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
                         isBeingDragged={section.id === activeDragId}
                       />
                     ))}
-                  </div>
+                  </ResumeFlow>
                 </SortableContext>
 
                 {/* Why portal DragOverlay to document.body?
@@ -302,7 +307,7 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
                     )
                   : null}
               </DndContext>
-            </div>
+            </ResumeFlow>
           </div>
 
           <HiddenSectionsPanel />

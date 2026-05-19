@@ -12,11 +12,12 @@ interface SectionHeaderProps {
 export function SectionHeader({ title, onAdd, children }: SectionHeaderProps) {
   return (
     <div
-      className="flex items-center gap-1 justify-start mb-2 border-b-[1.5px] border-black/30"
+      className="min-h-[1.75em] flex items-center gap-1 justify-start border-b-[1.5px] border-black/30"
+      // style={{ marginBottom: "var(--resume-header-content-gap, 0.25em)" }}
       data-section-header
     >
       {children || (
-        <h2 className="font-semibold" style={{ fontSize: "1.15em" }}>
+        <h2 className="font-bold uppercase">
           {title}
         </h2>
       )}

@@ -10,6 +10,7 @@ import { SectionHeader } from "../shared/SectionHeader";
 import { DeleteButton } from "../shared/DeleteButton";
 import { SortableItemList } from "../draggable/SortableItemList";
 import { DraggableItem } from "../draggable/DraggableItem";
+import { ItemFlow, SectionFlow } from "../shared/LayoutTiers";
 import { DateRangePicker } from "../shared/DateRangePicker";
 
 interface ProjectsSectionProps {
@@ -29,7 +30,7 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
   const canDelete = content.items.length > 1;
 
   return (
-    <div>
+    <SectionFlow>
       <SectionHeader
         title={content.title}
         onAdd={() => addSectionItem(section.id)}
@@ -37,74 +38,71 @@ export function ProjectsSection({ section }: ProjectsSectionProps) {
       <SortableItemList
         items={content.items}
         onReorder={(items) => reorderSectionItems(section.id, items)}
-        className="space-y-4"
       >
         {content.items.map((item) => (
-          <DraggableItem
-            key={item.id}
-            id={item.id}
-            className="space-y-1 group/item"
-          >
-            {/* Project Name and Dates */}
-            <div className="flex justify-between items-baseline gap-4">
-              <div className="flex gap-1 min-w-0 flex-1">
-                <EditableText
-                  value={item.name}
-                  onChange={(val) =>
-                    updateSectionItem(section.id, item.id, { name: val })
-                  }
-                  className="font-semibold"
-                  placeholder="Project Name"
-                />
-                {canDelete && (
-                  <DeleteButton
-                    onDelete={() => removeSectionItem(section.id, item.id)}
-                    itemName="section item"
-                    className="md:opacity-0 md:group-hover/item:opacity-100 transition-opacity"
+          <DraggableItem key={item.id} id={item.id} className="group/item">
+            <ItemFlow>
+              {/* Project Name and Dates */}
+              <div className="flex justify-between items-center gap-4">
+                <div className="flex gap-1 min-w-0 flex-1">
+                  <EditableText
+                    value={item.name}
+                    onChange={(val) =>
+                      updateSectionItem(section.id, item.id, { name: val })
+                    }
+                    className="font-semibold"
+                    placeholder="Project Name"
                   />
-                )}
+                  {canDelete && (
+                    <DeleteButton
+                      onDelete={() => removeSectionItem(section.id, item.id)}
+                      itemName="section item"
+                      className="md:opacity-0 md:group-hover/item:opacity-100 transition-opacity"
+                    />
+                  )}
+                </div>
+                <DateRangePicker
+                  startDate={item.startDate}
+                  endDate={item.endDate}
+                  onStartDateChange={(val) =>
+                    updateSectionItem(section.id, item.id, { startDate: val })
+                  }
+                  onEndDateChange={(val) =>
+                    updateSectionItem(section.id, item.id, { endDate: val })
+                  }
+                  onDelete={() =>
+                    updateSectionItem(section.id, item.id, {
+                      startDate: undefined,
+                      endDate: undefined,
+                    })
+                  }
+                />
               </div>
-              <DateRangePicker
-                startDate={item.startDate}
-                endDate={item.endDate}
-                onStartDateChange={(val) =>
-                  updateSectionItem(section.id, item.id, { startDate: val })
+              {/* URL */}
+              <EditableText
+                value={item.url || ""}
+                onChange={(val) =>
+                  updateSectionItem(section.id, item.id, { url: val })
                 }
-                onEndDateChange={(val) =>
-                  updateSectionItem(section.id, item.id, { endDate: val })
-                }
-                onDelete={() =>
-                  updateSectionItem(section.id, item.id, {
-                    startDate: undefined,
-                    endDate: undefined,
-                  })
-                }
+                // className="text-blue-600 hover:underline"
+                // style={{}}
+                // placeholder="https://project-url.com"
+                placeholder="Subtitle/Link"
               />
-            </div>
-            {/* URL */}
-            <EditableText
-              value={item.url || ""}
-              onChange={(val) =>
-                updateSectionItem(section.id, item.id, { url: val })
-              }
-              // className="text-blue-600 hover:underline"
-              // style={{}}
-              // placeholder="https://project-url.com"
-              placeholder="Subtitle/Link"
-            />
-            {/* Description */}
-            <EditableText
-              value={item.description}
-              onChange={(val) =>
-                updateSectionItem(section.id, item.id, { description: val })
-              }
-              className="whitespace-pre-line mt-1"
-              placeholder="Project description..."
-              multiline
-            />
+              {/* Description */}
+              <EditableText
+                value={item.description}
+                onChange={(val) =>
+                  updateSectionItem(section.id, item.id, { description: val })
+                }
+                className="whitespace-pre-line"
+                placeholder="Project description..."
+                multiline
+              />
+            </ItemFlow>
           </DraggableItem>
         ))}
       </SortableItemList>
-    </div>
+    </SectionFlow>
   );
 }

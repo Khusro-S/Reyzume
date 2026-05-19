@@ -6,6 +6,7 @@ import {
   useReyzumeStore,
 } from "@/hooks/useReyzumeStore";
 import { EditableText } from "../shared/EditableText";
+import { ItemFlow, SectionFlow } from "../shared/LayoutTiers";
 import { SectionHeader } from "../shared/SectionHeader";
 import { DeleteButton } from "../shared/DeleteButton";
 import { SortableItemList } from "../draggable/SortableItemList";
@@ -29,7 +30,7 @@ export function CertificationsSection({ section }: CertificationsSectionProps) {
   const canDelete = content.items.length > 1;
 
   return (
-    <div>
+    <SectionFlow>
       <SectionHeader
         title={content.title}
         onAdd={() => addSectionItem(section.id)}
@@ -37,15 +38,14 @@ export function CertificationsSection({ section }: CertificationsSectionProps) {
       <SortableItemList
         items={content.items}
         onReorder={(items) => reorderSectionItems(section.id, items)}
-        className="space-y-3"
       >
         {content.items.map((item) => (
           <DraggableItem
             key={item.id}
             id={item.id}
-            className="flex justify-between items-baseline gap-4 group/item"
+            className="flex justify-between items-center gap-4 group/item"
           >
-            <div className="flex-1 space-y-0.5">
+            <ItemFlow className="flex-1">
               <div className="flex gap-1 flex-1 min-w-0">
                 <EditableText
                   value={item.name}
@@ -71,7 +71,7 @@ export function CertificationsSection({ section }: CertificationsSectionProps) {
                 className="text-muted-foreground"
                 placeholder="Issuer"
               />
-            </div>
+            </ItemFlow>
             {/* <EditableText
               value={item.date}
               onChange={(val) =>
@@ -93,6 +93,6 @@ export function CertificationsSection({ section }: CertificationsSectionProps) {
           </DraggableItem>
         ))}
       </SortableItemList>
-    </div>
+    </SectionFlow>
   );
 }

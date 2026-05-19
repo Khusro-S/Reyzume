@@ -25,6 +25,8 @@ import {
 import { createPortal } from "react-dom";
 import { ItemOverlay } from "./Overlays";
 import { useOverlayStyle } from "@/components/providers/OverlayStyleContext";
+import { cn } from "@/lib/utils";
+import { SectionFlow } from "../shared/LayoutTiers";
 
 interface SortableItemListProps<T extends { id: string }> {
   items: T[];
@@ -116,7 +118,7 @@ export function SortableItemList<T extends { id: string }>({
         items={items.map((item) => item.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div className={className}>{children}</div>
+        <SectionFlow className={className}>{children}</SectionFlow>
       </SortableContext>
 
       {/* Portal to document.body to avoid transform: scale() issues */}

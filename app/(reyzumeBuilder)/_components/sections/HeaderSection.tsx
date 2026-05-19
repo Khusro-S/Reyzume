@@ -6,6 +6,7 @@ import {
   useReyzumeStore,
 } from "@/hooks/useReyzumeStore";
 import { EditableText } from "../shared/EditableText";
+import { ItemFlow } from "../shared/LayoutTiers";
 
 interface HeaderSectionProps {
   section: Section;
@@ -20,7 +21,7 @@ export function HeaderSection({ section }: HeaderSectionProps) {
   };
 
   return (
-    <div className="text-center space-y-1">
+    <ItemFlow className="text-center">
       <div className="flex justify-center">
         <EditableText
           value={content.name}
@@ -37,12 +38,10 @@ export function HeaderSection({ section }: HeaderSectionProps) {
           onChange={(val) =>
             handleChange("contactInfo" as keyof HeaderContent, val)
           }
-          // className="text-sm text-muted-foreground text-center"
           className="text-muted-foreground text-center"
-          style={{ fontSize: "0.85em" }}
           placeholder="email@example.com | (555) 123-4567 | City, Country"
         />
       </div>
-    </div>
+    </ItemFlow>
   );
 }

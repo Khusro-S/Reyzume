@@ -32,7 +32,7 @@ export function SectionControls({
     return null;
   }
   return (
-    <div className="absolute right-1 top-0 flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity print:hidden">
+    <div className="absolute right-1 top-0 h-[1.75em] flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity print:hidden">
       {/* Toggle visibility */}
       {canToggleVisibility && (
         <Button

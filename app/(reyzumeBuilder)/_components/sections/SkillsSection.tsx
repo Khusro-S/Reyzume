@@ -6,6 +6,7 @@ import {
   useReyzumeStore,
 } from "@/hooks/useReyzumeStore";
 import { EditableText } from "../shared/EditableText";
+import { SectionFlow } from "../shared/LayoutTiers";
 import { SectionHeader } from "../shared/SectionHeader";
 import { DeleteButton } from "../shared/DeleteButton";
 import { SortableItemList } from "../draggable/SortableItemList";
@@ -28,7 +29,7 @@ export function SkillsSection({ section }: SkillsSectionProps) {
   const canDelete = content.items.length > 1;
 
   return (
-    <div>
+    <SectionFlow>
       <SectionHeader
         title={content.title}
         onAdd={() => addSectionItem(section.id)}
@@ -36,7 +37,6 @@ export function SkillsSection({ section }: SkillsSectionProps) {
       <SortableItemList
         items={content.items}
         onReorder={(items) => reorderSectionItems(section.id, items)}
-        className="space-y-2"
       >
         {content.items?.map((category) => (
           <DraggableItem
@@ -75,6 +75,6 @@ export function SkillsSection({ section }: SkillsSectionProps) {
           </DraggableItem>
         ))}
       </SortableItemList>
-    </div>
+    </SectionFlow>
   );
 }

@@ -84,10 +84,10 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class: cn(
-          "prose prose-sm max-w-none focus:outline-none min-h-[1.5em]",
+          "max-w-none focus:outline-none",
           // Match existing EditableText styles
           // "text-base",
-          className
+          className,
         ),
       },
       // Prevent Enter key in single-line mode
@@ -134,8 +134,8 @@ export function RichTextEditor({
                 view.state.tr.insertText(
                   cleanText,
                   view.state.selection.from,
-                  view.state.selection.to
-                )
+                  view.state.selection.to,
+                ),
               );
             }
             return true;
@@ -164,8 +164,8 @@ export function RichTextEditor({
           const linkEnd = linkPos + (linkElement.textContent?.length || 0);
           view.dispatch(
             view.state.tr.setSelection(
-              TextSelection.create(view.state.doc, linkPos, linkEnd)
-            )
+              TextSelection.create(view.state.doc, linkPos, linkEnd),
+            ),
           );
 
           return true;
@@ -216,14 +216,22 @@ export function RichTextEditor({
     return null;
   }
 
+  const editorStyle = {
+    ...(singleLine ? { lineHeight: 1.15 } : {}),
+    ...style,
+  };
+
   return (
     <>
       {/* <LinkBubbleMenu editor={editor} onEdit={() => openLinkPopover?.()} /> */}
       <EditorContent
         editor={editor}
-        style={style}
+        style={editorStyle}
         className={cn(
-          "overflow-hidden bg-transparent [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[1.5em]",
+          "overflow-hidden bg-transparent [&_.ProseMirror]:outline-none",
+          singleLine
+            ? "[&_.ProseMirror]:min-h-0 [&_.ProseMirror]:leading-[1.15]"
+            : "[&_.ProseMirror]:min-h-0 [&_.ProseMirror]:leading-inherit",
           // Underline on focus
           "focus-within:border-b focus-within:border-b-foreground/muted transition-colors",
           // Placeholder styles
@@ -234,9 +242,9 @@ export function RichTextEditor({
           "[&_.ProseMirror.is-editor-empty:first-child::before]:h-0",
           "[&_.ProseMirror.is-editor-empty:first-child::before]:pointer-events-none",
           // List styles
-          "[&_ul]:list-disc [&_ul]:ml-4 [&_ul]:my-1",
-          "[&_ol]:list-decimal [&_ol]:ml-4 [&_ol]:my-1",
-          "[&_li]:pl-1",
+          "[&_ul]:list-disc [&_ul]:ml-4 [&_ul]:my-0",
+          "[&_ol]:list-decimal [&_ol]:ml-4 [&_ol]:my-0",
+          // "[&_li]:pl-1",
           // Paragraph spacing
           "[&_p]:my-0",
           // Hide trailing empty paragraph after bullet/ordered lists (Tiptap artifact)

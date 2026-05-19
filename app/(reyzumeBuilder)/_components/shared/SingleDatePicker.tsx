@@ -32,12 +32,12 @@ export function SingleDatePicker({
         variant="ghost"
         size="sm"
         className={cn(
-          "h-6 px-2 md:opacity-0 md:group-hover/item:opacity-100 transition-opacity text-muted-foreground hover:text-foreground print:hidden",
-          className
+          "h-4 px-1.5 inline-flex items-center md:opacity-0 md:group-hover/item:opacity-100 transition-opacity text-muted-foreground hover:text-foreground print:hidden",
+          className,
         )}
         onClick={() => onChange("")}
       >
-        <CalendarPlus className="h-4 w-4 mr-1" />
+        <CalendarPlus className="h-3 w-3 mr-1" />
         <span style={{ fontSize: "0.8em" }}>Add date</span>
       </Button>
     );
@@ -46,12 +46,15 @@ export function SingleDatePicker({
   // Has date - show picker with delete button on hover
   return (
     <div
-      className={cn("flex items-center gap-1 shrink-0 print:hidden", className)}
+      className={cn(
+        "h-4 flex items-center gap-1 shrink-0 print:hidden",
+        className,
+      )}
     >
       <Button
         variant="ghost"
         size="sm"
-        className="h-5 w-5 p-0 md:opacity-0 md:group-hover/item:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+        className="h-4 w-4 p-0 md:opacity-0 md:group-hover/item:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
         onClick={onDelete}
       >
         <X className="h-3 w-3" />

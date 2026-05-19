@@ -175,6 +175,12 @@ h6 {
     display: none;
   }
 }
+/* ─── Resume layout token utilities ───────────────────────────────────────────
+   These classes are consumed by resume primitives (DraggableItem, SortableItemList,
+   SectionHeader, ReyzumeBuilder).
+   The Layout flow is now handled explicitly via LayoutTiers.tsx <ResumeFlow />, <SectionFlow /> and <ItemFlow /> 
+   and should not rely on sibling combinators any more. */
+
 /* TipTap placeholder styles */
 .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
@@ -191,6 +197,17 @@ h6 {
   pointer-events: none;
   height: 0;
 }
+/* Inherit custom resume font family for all heading tags inside the resume builder canvas */
+[data-pdf-container] h1,
+[data-pdf-container] h2,
+[data-pdf-container] h3,
+[data-pdf-container] h4,
+[data-pdf-container] h5,
+[data-pdf-container] h6 {
+  font-family: inherit;
+  letter-spacing: normal;
+}
+
 @media print {
   @page {
     size: A4;
