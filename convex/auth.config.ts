@@ -1,3 +1,5 @@
+declare const process: { env: { [key: string]: string | undefined } };
+
 import { AuthConfig } from "convex/server";
 
 export default {
