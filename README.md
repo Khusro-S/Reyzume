@@ -180,11 +180,11 @@ lib/
 
 ## 🚧 Limitations
 
-### **1. Bullet Point Editor Issue**
+### ~~**1. Bullet Point Editor Issue**~~
 
-When pressing **Enter** inside a bullet list, an extra empty line is sometimes inserted and can't be deleted.  
+~~When pressing **Enter** inside a bullet list, an extra empty line is sometimes inserted and can't be deleted.  
 This is related to Tiptap’s list-handling configuration.  
-Since it doesn’t break core functionality, it was deprioritized due to the ELO2 submission deadline.
+Since it doesn’t break core functionality, it was deprioritized due to the ELO2 submission deadline.~~
 
 ---
 
@@ -224,17 +224,17 @@ A more accurate, fully paginated layout system will be explored in future iterat
 
 ---
 
-### **5. Drag-and-Drop with Tall Sections**
+### ~~**5. Drag-and-Drop with Tall Sections**~~
 
-When a section contains significantly more content than others (resulting in taller height), dragging and reordering can exhibit unexpected behavior, including:
+~~When a section contains significantly more content than others (resulting in taller height), dragging and reordering can exhibit unexpected behavior, including:~~
 
-- Jarring animations during drag operations
-- Inconsistent drop zone detection
-- Visual glitches while hovering between sections
+- ~~Jarring animations during drag operations~~
+- ~~Inconsistent drop zone detection~~
+- ~~Visual glitches while hovering between sections~~
 
-This is related to how `@dnd-kit` calculates collision detection with dynamically-sized elements. The functionality remains intact, sections can still be reordered as intended, but the user experience may feel less polished in these cases.
+~~This is related to how `@dnd-kit` calculates collision detection with dynamically-sized elements. The functionality remains intact, sections can still be reordered as intended, but the user experience may feel less polished in these cases.~~
 
-A deeper investigation into custom collision detection strategies and drag constraints is planned for future iterations but was deprioritized due to the ELO2 submission deadline.
+~~A deeper investigation into custom collision detection strategies and drag constraints is planned for future iterations but was deprioritized due to the ELO2 submission deadline.~~
 
 ---
 
