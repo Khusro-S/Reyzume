@@ -48,6 +48,7 @@ export default function ReyzumesPage() {
   const restoreMultipleReyzumes = useMutation(
     api.reyzumes.restoreMultipleReyzumes,
   );
+  const duplicateReyzume = useMutation(api.reyzumes.duplicateReyzume);
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -245,9 +246,21 @@ export default function ReyzumesPage() {
     }, 100);
   };
 
-  const handleDuplicate = (reyzumeId: string, e: React.MouseEvent) => {
+  const handleDuplicate = async (reyzumeId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    toast.info("Duplicate feature coming soon!");
+    const id = reyzumeId as Id<"reyzumes">;
+    const promise = duplicateReyzume({ id })
+      .then((newReyzumeId) => {
+        if (newReyzumeId) {
+          router.push(`/reyzumes/${newReyzumeId}`);
+        }
+      });
+
+    toast.promise(promise, {
+      loading: "Duplicating Reyzume...",
+      success: "Reyzume duplicated! Opening...",
+      error: "Failed to duplicate Reyzume.",
+    });
   };
 
   const handleDownload = (reyzumeId: string, e: React.MouseEvent) => {
