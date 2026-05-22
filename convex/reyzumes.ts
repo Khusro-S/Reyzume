@@ -520,3 +520,44 @@ export const updateLineHeight = mutation({
     return { success: true };
   },
 });
+
+export const duplicateReyzume = mutation({
+  args: { id: v.id("reyzumes") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized or not logged in");
+    }
+
+    const userId = identity.subject;
+
+    const existingReyzume = await ctx.db.get(args.id);
+    if (!existingReyzume) {
+      throw new Error("Reyzume not found");
+    }
+
+    if (existingReyzume.userId !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const title = `${existingReyzume.title} Copy`;
+
+    const resumeId = await ctx.db.insert("reyzumes", {
+      title,
+      userId,
+      folderId: existingReyzume.folderId,
+      content: existingReyzume.content || "",
+      isArchived: false,
+      isPublished: false,
+      fontFamily: existingReyzume.fontFamily || "Times New Roman, Times, serif",
+      fontSize: existingReyzume.fontSize || "11pt",
+      marginVertical: existingReyzume.marginVertical || "10",
+      marginHorizontal: existingReyzume.marginHorizontal || "10",
+      lineHeight: existingReyzume.lineHeight || "1.4",
+      updatedAt: Date.now(),
+    });
+
+    return resumeId;
+  },
+});
+

@@ -226,6 +226,12 @@ h6 {
 
   nav,
   header,
+  button,
+  nextjs-portal,
+  [data-nextjs-portal],
+  [data-nextjs-toast],
+  [data-nextjs-dialog],
+  #next-route-announcer,
   [class*="print:hidden"] {
     display: none !important;
   }
@@ -239,6 +245,19 @@ h6 {
     border-radius: 0 !important;
     box-shadow: none !important;
     page-break-after: auto;
+  }
+
+  /* Reset layout and spacing of all ancestors in the print stream to prevent extra top/bottom margins */
+  body :has([data-pdf-container]) {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    width: auto !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    display: block !important;
+    transform: none !important;
   }
 /* [data-pdf-container] > div {
   padding: 0 !important;

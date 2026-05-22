@@ -8,7 +8,7 @@ import Toolbar from "@/app/(reyzumeBuilder)/_components/Toolbar";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import ReyzumeBuilderPageSkeleton from "../../_components/ReyzumeBuilderPageSkeleton";
 import ReyzumeNotFound from "../_components/ReyzumeNotFound";
@@ -33,9 +33,10 @@ export default function ReyzumeIdPage() {
   const { isLoading: isAuthLoading } = useConvexAuth();
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const reyzumeId = params.reyzumeId as string;
-
+  const isPrintMode = searchParams.get("print") === "true";
   const isObviouslyInvalid = !reyzumeId || reyzumeId.length < 10;
 
   const reyzume = useQuery(
@@ -59,6 +60,19 @@ export default function ReyzumeIdPage() {
     };
   }, [reyzume?.title]);
 
+  // Post message to parent when content is fully loaded in print mode
+  useEffect(() => {
+    if (isPrintMode && reyzume && !isAuthLoading) {
+      const timer = setTimeout(() => {
+        window.parent.postMessage(
+          { type: "REYZUME_READY_TO_PRINT", id: reyzumeId },
+          window.location.origin
+        );
+      }, 1000); // 1-second delay for fonts/styles layout calculations
+      return () => clearTimeout(timer);
+    }
+  }, [isPrintMode, reyzume, isAuthLoading, reyzumeId]);
+
   if (reyzume === undefined || isAuthLoading) {
     return <ReyzumeBuilderPageSkeleton />;
   }
@@ -66,6 +80,15 @@ export default function ReyzumeIdPage() {
   // Valid ID but resume not found or no access
   if (!reyzume) {
     return <ReyzumeNotFound />;
+  }
+
+  // If in print mode, render only the builder in a clean sheet with no chrome
+  if (isPrintMode) {
+    return (
+      <div className="w-full bg-white print:p-0">
+        <ReyzumeBuilder ref={builderRef} />
+      </div>
+    );
   }
 
   const handleRestore = async () => {

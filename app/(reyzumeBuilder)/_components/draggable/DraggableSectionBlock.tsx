@@ -52,7 +52,7 @@ export function DraggableSectionBlock({
     >
       {/* Drag handle */}
       <button
-        className="absolute -left-7 md:-left-6 top-0.5 cursor-grab active:cursor-grabbing opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity touch-none select-none print:hidden"
+        className="absolute -left-7 md:-left-6 top-0.5 cursor-grab active:cursor-grabbing opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity touch-none select-none print:hidden bg-transparent border-none p-0 shadow-none outline-none"
         {...attributes}
         {...listeners}
       >

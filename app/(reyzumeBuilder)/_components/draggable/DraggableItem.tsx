@@ -37,11 +37,11 @@ export function DraggableItem({ id, children, className }: DraggableItemProps) {
     >
       {/* Drag handle */}
       <button
-        className="absolute -left-5 top-0 cursor-grab active:cursor-grabbing md:opacity-0 md:group-hover/item:opacity-100 transition-opacity touch-none select-none"
+        className="absolute -left-5 top-0 cursor-grab active:cursor-grabbing md:opacity-0 md:group-hover/item:opacity-100 transition-opacity touch-none select-none print:hidden bg-transparent border-none p-0 shadow-none outline-none"
         {...attributes}
         {...listeners}
       >
-        <GripVertical className="md:h-4 md:w-4 h-5 w-5 text-muted-foreground print:hidden" />
+        <GripVertical className="md:h-4 md:w-4 h-5 w-5 text-muted-foreground" />
       </button>
       {children}
     </div>

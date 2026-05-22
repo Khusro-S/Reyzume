@@ -54,34 +54,46 @@ export function DateRangePicker({
 
   // Has dates - show pickers with delete button on hover
   return (
-    <div
-      className={cn(
-        "h-4 flex items-center gap-1 shrink-0 print:hidden",
-        className,
-      )}
-    >
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-4 w-4 p-0 md:opacity-0 md:group-hover/item:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-        onClick={onDelete}
+    <>
+      <div
+        className={cn(
+          "h-4 flex items-center gap-1 shrink-0 print:hidden",
+          className,
+        )}
       >
-        <X className="h-3 w-3" />
-      </Button>
-      <div className="flex gap-1 text-muted-foreground whitespace-nowrap items-center">
-        <MonthYearPicker
-          value={startDate || ""}
-          onChange={onStartDateChange}
-          placeholder={startPlaceholder}
-        />
-        <span>-</span>
-        <MonthYearPicker
-          value={endDate || ""}
-          onChange={onEndDateChange}
-          placeholder={endPlaceholder}
-          allowPresent={allowPresent}
-        />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-4 w-4 p-0 md:opacity-0 md:group-hover/item:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+          onClick={onDelete}
+        >
+          <X className="h-3 w-3" />
+        </Button>
+        <div className="flex gap-1 text-muted-foreground whitespace-nowrap items-center">
+          <MonthYearPicker
+            value={startDate || ""}
+            onChange={onStartDateChange}
+            placeholder={startPlaceholder}
+          />
+          <span>-</span>
+          <MonthYearPicker
+            value={endDate || ""}
+            onChange={onEndDateChange}
+            placeholder={endPlaceholder}
+            allowPresent={allowPresent}
+          />
+        </div>
       </div>
-    </div>
+      {(startDate || endDate) && (
+        <span
+          className={cn(
+            "hidden print:inline-block text-muted-foreground text-sm font-normal shrink-0 whitespace-nowrap",
+            className,
+          )}
+        >
+          {startDate && endDate ? `${startDate} - ${endDate}` : startDate || endDate}
+        </span>
+      )}
+    </>
   );
 }

@@ -48,6 +48,7 @@ export default function ReyzumesPage() {
   const restoreMultipleReyzumes = useMutation(
     api.reyzumes.restoreMultipleReyzumes,
   );
+  const duplicateReyzume = useMutation(api.reyzumes.duplicateReyzume);
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -245,14 +246,86 @@ export default function ReyzumesPage() {
     }, 100);
   };
 
-  const handleDuplicate = (reyzumeId: string, e: React.MouseEvent) => {
+  const handleDuplicate = async (reyzumeId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    toast.info("Duplicate feature coming soon!");
+    const id = reyzumeId as Id<"reyzumes">;
+    const promise = duplicateReyzume({ id })
+      .then((newReyzumeId) => {
+        if (newReyzumeId) {
+          router.push(`/reyzumes/${newReyzumeId}`);
+        }
+      });
+
+    toast.promise(promise, {
+      loading: "Duplicating Reyzume...",
+      success: "Reyzume duplicated! Opening...",
+      error: "Failed to duplicate Reyzume.",
+    });
   };
 
   const handleDownload = (reyzumeId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    toast.info("Download feature coming soon!");
+
+    const toastId = `download-loading-${reyzumeId}`;
+    toast.loading("Preparing PDF download...", { id: toastId });
+
+    // 1. Create an off-screen render iframe (avoid display: none to ensure correct viewport layout)
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.width = "1024px";
+    iframe.style.height = "768px";
+    iframe.style.opacity = "0";
+    iframe.style.pointerEvents = "none";
+    iframe.style.zIndex = "-9999";
+    iframe.style.top = "0";
+    iframe.style.left = "0";
+    iframe.src = `/reyzumes/${reyzumeId}?print=true&t=${Date.now()}`;
+
+    // 2. Set up dynamic timeout backup (12 seconds)
+    const timeoutId = setTimeout(() => {
+      window.removeEventListener("message", handleMessage);
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+      toast.dismiss(toastId);
+      toast.error("Failed to prepare PDF. Please try again.");
+    }, 12000);
+
+    // 3. Set up origin-safe messaging handler
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+
+      if (
+        event.data?.type === "REYZUME_READY_TO_PRINT" &&
+        event.data?.id === reyzumeId
+      ) {
+        clearTimeout(timeoutId);
+        window.removeEventListener("message", handleMessage);
+        
+        toast.dismiss(toastId);
+        toast.success("PDF ready! Check your print dialog.");
+
+        // Trigger print dialog on iframe content window
+        try {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+        } catch (err) {
+          console.error("Print error inside iframe:", err);
+          toast.error("Failed to open print dialog.");
+        }
+
+        // Keep the iframe in DOM briefly so Chrome print dialog loads resources properly
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 3000);
+      }
+    };
+
+    // 4. Register message listener and append iframe to DOM
+    window.addEventListener("message", handleMessage);
+    document.body.appendChild(iframe);
   };
 
   const handleArchive = async (
