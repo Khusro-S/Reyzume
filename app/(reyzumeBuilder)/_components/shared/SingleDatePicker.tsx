@@ -45,27 +45,39 @@ export function SingleDatePicker({
 
   // Has date - show picker with delete button on hover
   return (
-    <div
-      className={cn(
-        "h-4 flex items-center gap-1 shrink-0 print:hidden",
-        className,
-      )}
-    >
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-4 w-4 p-0 md:opacity-0 md:group-hover/item:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-        onClick={onDelete}
+    <>
+      <div
+        className={cn(
+          "h-4 flex items-center gap-1 shrink-0 print:hidden",
+          className,
+        )}
       >
-        <X className="h-3 w-3" />
-      </Button>
-      <MonthYearPicker
-        value={date || ""}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="text-muted-foreground"
-        allowPresent={allowPresent}
-      />
-    </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-4 w-4 p-0 md:opacity-0 md:group-hover/item:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+          onClick={onDelete}
+        >
+          <X className="h-3 w-3" />
+        </Button>
+        <MonthYearPicker
+          value={date || ""}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="text-muted-foreground"
+          allowPresent={allowPresent}
+        />
+      </div>
+      {date && (
+        <span
+          className={cn(
+            "hidden print:inline-block text-muted-foreground text-sm font-normal shrink-0 whitespace-nowrap",
+            className,
+          )}
+        >
+          {date}
+        </span>
+      )}
+    </>
   );
 }
