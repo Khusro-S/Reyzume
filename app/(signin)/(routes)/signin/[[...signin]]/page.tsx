@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthBackground } from "@/components/auth/AuthBackground";
+import { AuthLoadingCard } from "@/components/auth/AuthLoadingCard";
 import { SignIn, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -20,7 +21,7 @@ export default function SignInPage() {
   if (!isLoaded) {
     return (
       <AuthBackground>
-        <div className="h-100 w-100 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <AuthLoadingCard mode="signin" />
       </AuthBackground>
     );
   }
