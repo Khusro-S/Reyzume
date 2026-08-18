@@ -1,6 +1,16 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+/** Every mutation that patches a resume must call this so users cannot edit each other's docs. */
+function assertOwnsResume(
+  identity: { subject: string },
+  resume: { userId: string }
+) {
+  if (resume.userId !== identity.subject) {
+    throw new Error("Unauthorized");
+  }
+}
+
 export const createReyzume = mutation({
   args: {
     title: v.string(),
@@ -420,6 +430,10 @@ export const updateFontFamily = mutation({
     if (!existingReyzume) {
       throw new Error("Reyzume not found");
     }
+
+    // Same owner check as updateFontSize / updateContent (this was previously missing).
+    assertOwnsResume(identity, existingReyzume);
+
     await ctx.db.patch(args.id, {
       fontFamily: args.fontFamily,
       updatedAt: Date.now(),
@@ -472,6 +486,9 @@ export const updateMargins = mutation({
     if (!reyzume) {
       throw new Error("Reyzume not found");
     }
+
+    // Same owner check as other resume mutations (this was previously missing).
+    assertOwnsResume(identity, reyzume);
 
     const updates: {
       marginVertical?: string;

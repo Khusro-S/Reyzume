@@ -184,12 +184,13 @@ export function RichTextEditor({
       // onChange(content);
       onChange(editor.getHTML());
     },
-    onFocus: () => {
-      setActiveEditor(editor);
-      if (editor && selectAllOnFocus) {
+    onFocus: ({ editor: focusedEditor }) => {
+      // Use the event's editor — `editor` from useEditor can still be null on first render.
+      setActiveEditor(focusedEditor);
+      if (selectAllOnFocus) {
         // Defer to next tick so TipTap finishes its focus handling
         setTimeout(() => {
-          editor.commands.selectAll();
+          focusedEditor.commands.selectAll();
         }, 0);
       }
     },
@@ -205,10 +206,10 @@ export function RichTextEditor({
     }
   }, [editor, id, registerEditor, unregisterEditor]);
 
-  // Sync external value changes
+  // Sync external value changes without marking the draft dirty.
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || "");
+      editor.commands.setContent(value || "", { emitUpdate: false });
     }
   }, [value, editor]);
 

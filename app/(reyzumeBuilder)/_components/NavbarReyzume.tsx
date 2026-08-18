@@ -2,12 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Doc } from "@/convex/_generated/dataModel";
-import { ArrowLeft, Download } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { ArrowLeft, Download, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import Title from "./Title";
-import { useRef, useState } from "react";
-import { useReactToPrint } from "react-to-print";
+import { useEffect, useRef, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,76 +17,153 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { isSafari } from "@/lib/browserDetect";
+import { printReyzumeViaIframe } from "@/lib/printReyzume";
+import { retryReyzumeSave } from "@/lib/reyzumeSaveNow";
+import { useReyzumeStore } from "@/hooks/useReyzumeStore";
 
 interface NavbarReyzumeProps {
   reyzume: Doc<"reyzumes">;
-  getContentRef: () => HTMLDivElement | null;
   isReadOnly?: boolean;
 }
+
 export default function NavbarReyzume({
   reyzume,
-  getContentRef,
   isReadOnly = false,
 }: NavbarReyzumeProps) {
   const router = useRouter();
   const [isPrinting, setIsPrinting] = useState(false);
-  const printRef = useRef<HTMLDivElement | null>(null);
+  const [isSafariBrowser, setIsSafariBrowser] = useState(false);
+  const [pendingBack, setPendingBack] = useState(false);
+  const printCleanupRef = useRef<(() => void) | null>(null);
+  const isSaving = useReyzumeStore((state) => state.isSaving);
+  const isDirty = useReyzumeStore((state) => state.isDirty);
+  const lastSaveStatus = useReyzumeStore((state) => state.lastSaveStatus);
 
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: reyzume.title || "Resume",
-    onBeforePrint: async () => {
-      setIsPrinting(true);
-      toast.loading("Preparing PDF...", { id: "print-loading" });
-    },
-    onAfterPrint: () => {
-      setIsPrinting(false);
-      toast.dismiss("print-loading");
-      toast.success("PDF ready! Check your downloads or print dialog.");
-    },
-    onPrintError: (errorLocation: "onBeforePrint" | "print", error: Error) => {
-      setIsPrinting(false);
-      toast.dismiss("print-loading");
-      toast.error("Failed to generate PDF. Please try again.");
-      console.error("Print error at", errorLocation, ":", error);
-    },
-  });
-  // const handleBack = () => {
-  //   router.push("/reyzumes");
-  // };
+  useEffect(() => {
+    setIsSafariBrowser(isSafari());
+  }, []);
 
-  const handleDownload = () => {
-    // Update the ref right before printing to ensure we have the latest element
-    printRef.current = getContentRef();
+  useEffect(() => {
+    return () => {
+      printCleanupRef.current?.();
+      printCleanupRef.current = null;
+    };
+  }, []);
 
-    if (!printRef.current) {
-      toast.error("Resume content not found. Please try again.");
+  // Leave once save finishes and the draft is clean. Keep pendingBack while dirty
+  // so we flush instead of aborting before isSaving flips true.
+  useEffect(() => {
+    if (!pendingBack || isSaving) return;
+
+    const stillDirty = useReyzumeStore.getState().isDirty;
+    if (lastSaveStatus === "error") {
+      setPendingBack(false);
+      toast.error("Couldn't save. Stay on this page to keep your edits.");
       return;
     }
 
-    handlePrint();
+    if (stillDirty) {
+      void retryReyzumeSave().catch(() => {
+        setPendingBack(false);
+      });
+      return;
+    }
+
+    router.push("/reyzumes");
+  }, [pendingBack, isSaving, isDirty, lastSaveStatus, router]);
+
+  const handleBackWhileBusy = () => {
+    if (pendingBack) return;
+    setPendingBack(true);
   };
+
+  const handleDownload = () => {
+    if (isPrinting) return;
+
+    const toastId = "print-loading";
+    setIsPrinting(true);
+    toast.loading("Preparing PDF...", { id: toastId });
+
+    // Same path as /reyzumes list download — full print-mode page in a hidden iframe.
+    printCleanupRef.current = printReyzumeViaIframe({
+      reyzumeId: reyzume._id,
+      onReady: () => {
+        setIsPrinting(false);
+        toast.dismiss(toastId);
+        toast.success("PDF ready! Check your print dialog.");
+      },
+      onError: (message) => {
+        setIsPrinting(false);
+        toast.dismiss(toastId);
+        toast.error(message);
+      },
+      onCancel: () => {
+        setIsPrinting(false);
+        toast.dismiss(toastId);
+      },
+    });
+  };
+
+  // Clean draft (or read-only) → normal Link. Dirty/saving → intercept with save-then-push.
+  const usePlainLink =
+    isReadOnly || (!isDirty && !isSaving && !pendingBack);
+
   return (
     <header className="w-full print:hidden">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
-        {/* <nav className="z-50 bg-background border-b border-border"> */}
         <div className="flex items-center justify-between gap-5 px-3 py-2 max-w-screen-2xl mx-auto">
-          {/* Left: Back button + Title */}
           <div className="flex items-center gap-1 flex-1 min-w-0">
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              // onClick={handleBack}
-              //   className="flex items-center gap-2 hover:bg-accent"
-              className="hover:bg-accent p-0"
-            >
-              <Link href="/reyzumes" prefetch>
-                <ArrowLeft className="h-4 w-4" />
-              </Link>
-              {/* <span className="hidden sm:inline">Back</span> */}
-            </Button>
+            {usePlainLink ? (
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="hover:bg-accent p-0"
+              >
+                <Link href="/reyzumes" prefetch aria-label="Back to resumes">
+                  <ArrowLeft className="h-4 w-4" />
+                </Link>
+              </Button>
+            ) : (
+              <Tooltip open={pendingBack ? true : undefined}>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className={`hover:bg-accent p-0${pendingBack || isSaving ? " opacity-50" : ""}`}
+                      aria-label={
+                        pendingBack
+                          ? "Saving, going back when done"
+                          : isSaving
+                            ? "Saving in progress, click to go back when done"
+                            : "Unsaved changes, click to save and go back"
+                      }
+                      onClick={handleBackWhileBusy}
+                      disabled={pendingBack}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {pendingBack
+                    ? "Saving, going back when done"
+                    : isSaving
+                      ? "Saving in progress, click to go back when done"
+                      : "Unsaved changes, click to save and go back"}
+                </TooltipContent>
+              </Tooltip>
+            )}
 
             <div className="min-w-0 max-w-md md:max-w-lg w-full">
               <Title
@@ -99,7 +174,6 @@ export default function NavbarReyzume({
             </div>
           </div>
 
-          {/* Right: Download button */}
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
@@ -136,7 +210,7 @@ export default function NavbarReyzume({
                           Margins: <strong>Minimum</strong>
                         </li>
                         <li>
-                          Options: Check <strong>Headers and footers</strong>
+                          Options: Uncheck <strong>Headers and footers</strong>
                         </li>
                         <li>
                           Options: Uncheck <strong>Background graphics</strong>
@@ -154,6 +228,34 @@ export default function NavbarReyzume({
                         </li>
                       </ul>
                     </div>
+
+                    {isSafariBrowser && (
+                      <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-600" />
+                          <div>
+                            <p className="font-semibold mb-1">
+                              Safari User Notice
+                            </p>
+                            <p>
+                              Safari&apos;s native print engine automatically
+                              adds extra white space around documents that cannot
+                              be removed. Your downloaded PDF may have slightly
+                              wider margins than what you see in the editor.
+                            </p>
+                            <p className="mt-1.5 font-medium">
+                              Tip:{" "}
+                              <span className="font-normal">
+                                You can either reduce the spacing settings in the
+                                editor to compensate, or use{" "}
+                                <strong>Chrome / Edge</strong> for a
+                                pixel-perfect, 1:1 export.
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>

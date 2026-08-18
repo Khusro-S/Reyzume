@@ -100,7 +100,6 @@ export function getSectionDefaultContent(
       return {
         name: userData?.fullName || "",
         contactInfo: contactParts.join(" | "),
-        links: [],
       } as HeaderContent;
     case "summary":
       return {
@@ -162,7 +161,7 @@ export function getSectionDefaultItem(type: SectionType) {
         school: "",
         location: "",
         startDate: "",
-        graduationDate: "",
+        endDate: "",
         current: false,
         description: "",
       };

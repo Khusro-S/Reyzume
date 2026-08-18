@@ -212,18 +212,24 @@ h6 {
   @page {
     size: A4;
     margin: 0;
-    padding: 0;
   }
 
+  /* Print document height must follow content. A forced min-height of exactly
+     one A4 page, plus Safari's non-removable margins, overflows onto a blank
+     second page. */
   html,
   body {
+    width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
+    overflow: visible !important;
     background: white !important;
+    background-image: none !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
+  /* Hide all non-print UI */
   nav,
   header,
   button,
@@ -236,44 +242,43 @@ h6 {
     display: none !important;
   }
 
-  [data-pdf-container]{
+  /* Resume container — strip cosmetics, preserve user-configured padding */
+  [data-pdf-container] {
     transform: none !important;
+    transform-origin: top left !important;
     max-width: none !important;
     width: 210mm !important;
     min-height: auto !important;
-    height: auto !important;  
+    height: auto !important;
+    margin: 0 !important;
     border-radius: 0 !important;
+    border: none !important;
     box-shadow: none !important;
+    background: white !important;
     page-break-after: auto;
   }
 
-  /* Reset layout and spacing of all ancestors in the print stream to prevent extra top/bottom margins */
-  body :has([data-pdf-container]) {
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: auto !important;
-    width: auto !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    display: block !important;
-    transform: none !important;
-  }
-/* [data-pdf-container] > div {
-  padding: 0 !important;
-} */
+  /* Page break control */
   [data-section-id] {
     break-inside: auto;
     page-break-inside: auto;
-  } 
-  /* Only keep section HEADERS together with at least some content */
+  }
+
   [data-section-header] {
     break-inside: avoid;
     break-after: avoid;
   }
 
-   /* Allow multi-line content to flow naturally */
   [data-item-id] {
     break-inside: auto;
-  } 
+  }
+
+  /* Strip Safari's user-agent padding on contenteditable elements */
+  [contenteditable="true"],
+  .ProseMirror {
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    border: none !important;
+  }
 }

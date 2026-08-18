@@ -20,13 +20,13 @@ const workSans = Work_Sans({
 export const metadata: Metadata = {
   title: "Reyzume | Build ATS-Friendly Resumes Effortlessly",
   description:
-    "Create professional, ATS-optimized resumes with Reyzume. Fast, beautiful, and AI-assisted.",
+    "Create professional, ATS-optimized resumes with Reyzume. Fast, beautiful, and easy to edit.",
   openGraph: {
     title: "Reyzume",
     description: "Build ATS-friendly resumes in minutes.",
     url: "https://reyzume.com",
     siteName: "Reyzume",
-    images: ["/og-image.png"],
+    images: ["/ReyzumeLogo.png"],
     locale: "en_US",
     type: "website",
   },

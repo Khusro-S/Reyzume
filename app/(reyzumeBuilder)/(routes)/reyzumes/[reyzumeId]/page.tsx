@@ -1,15 +1,13 @@
 "use client";
 
 import NavbarReyzume from "@/app/(reyzumeBuilder)/_components/NavbarReyzume";
-import ReyzumeBuilder, {
-  ReyzumeBuilderHandle,
-} from "@/app/(reyzumeBuilder)/_components/ReyzumeBuilder";
+import ReyzumeBuilder from "@/app/(reyzumeBuilder)/_components/ReyzumeBuilder";
 import Toolbar from "@/app/(reyzumeBuilder)/_components/Toolbar";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import ReyzumeBuilderPageSkeleton from "../../_components/ReyzumeBuilderPageSkeleton";
 import ReyzumeNotFound from "../_components/ReyzumeNotFound";
 
@@ -27,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { waitForPrintLayoutReady } from "@/lib/waitForPrintLayoutReady";
 
 export default function ReyzumeIdPage() {
   const { isLoading: isAuthLoading } = useConvexAuth();
@@ -46,10 +44,6 @@ export default function ReyzumeIdPage() {
   const restoreReyzume = useMutation(api.reyzumes.restoreReyzume);
   const deleteReyzume = useMutation(api.reyzumes.deleteReyzume);
 
-  const builderRef = useRef<ReyzumeBuilderHandle>(null);
-
-  const getContentRef = () => builderRef.current?.getContainerRef() ?? null;
-
   // Dynamic document title
   useEffect(() => {
     if (reyzume?.title) {
@@ -60,18 +54,32 @@ export default function ReyzumeIdPage() {
     };
   }, [reyzume?.title]);
 
-  // Post message to parent when content is fully loaded in print mode
+  // Tell the parent iframe when print layout is ready (fonts + measured container),
+  // instead of always waiting a fixed 1 second.
+  // Depend on reyzume._id (not the whole doc) so Convex field updates don't restart the wait.
+  const reyzumeLoadedId = reyzume?._id;
   useEffect(() => {
-    if (isPrintMode && reyzume && !isAuthLoading) {
-      const timer = setTimeout(() => {
-        window.parent.postMessage(
-          { type: "REYZUME_READY_TO_PRINT", id: reyzumeId },
-          window.location.origin
-        );
-      }, 1000); // 1-second delay for fonts/styles layout calculations
-      return () => clearTimeout(timer);
-    }
-  }, [isPrintMode, reyzume, isAuthLoading, reyzumeId]);
+    if (!isPrintMode || !reyzumeLoadedId || isAuthLoading) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const ready = await waitForPrintLayoutReady({ timeoutMs: 2000 });
+      if (cancelled) return;
+
+      // Avoid telling the parent to print an empty shell if layout never mounted.
+      if (ready.containerHeight <= 0) return;
+
+      window.parent.postMessage(
+        { type: "REYZUME_READY_TO_PRINT", id: reyzumeId },
+        window.location.origin
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isPrintMode, reyzumeLoadedId, isAuthLoading, reyzumeId]);
 
   if (reyzume === undefined || isAuthLoading) {
     return <ReyzumeBuilderPageSkeleton />;
@@ -86,7 +94,7 @@ export default function ReyzumeIdPage() {
   if (isPrintMode) {
     return (
       <div className="w-full bg-white print:p-0">
-        <ReyzumeBuilder ref={builderRef} />
+        <ReyzumeBuilder />
       </div>
     );
   }
@@ -116,11 +124,7 @@ export default function ReyzumeIdPage() {
   if (reyzume.isArchived) {
     return (
       <div className="flex flex-col justify-center items-center">
-        <NavbarReyzume
-          reyzume={reyzume}
-          getContentRef={getContentRef}
-          isReadOnly
-        />
+        <NavbarReyzume reyzume={reyzume} isReadOnly />
 
         {/* Archived Banner */}
         <div className="fixed top-16 left-0 right-0 z-40 bg-red-100 border-b border-red-200 px-4 py-3">
@@ -184,7 +188,7 @@ export default function ReyzumeIdPage() {
 
         {/* Read-only view with pointer-events disabled */}
         <div className="mt-40 md:mt-32 min-h-screen max-w-6xl px-4 pointer-events-none select-none">
-          <ReyzumeBuilder ref={builderRef} />
+          <ReyzumeBuilder />
         </div>
       </div>
     );
@@ -192,11 +196,11 @@ export default function ReyzumeIdPage() {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <NavbarReyzume reyzume={reyzume} getContentRef={getContentRef} />
+      <NavbarReyzume reyzume={reyzume} />
 
       <Toolbar />
       <div className="mt-20 min-h-screen max-w-6xl px-4">
-        <ReyzumeBuilder ref={builderRef} />
+        <ReyzumeBuilder />
       </div>
     </div>
   );

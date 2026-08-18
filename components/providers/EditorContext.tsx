@@ -53,10 +53,11 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const unregisterEditor = useCallback(
     (id: string) => {
+      const removed = editors.get(id);
       editors.delete(id);
-      // If the unregistered editor was active, clear it
+      // Compare before delete would always fail — the map entry is already gone.
       setActiveEditor((current) => {
-        if (current && editors.get(id) === current) {
+        if (current && removed === current) {
           return null;
         }
         return current;

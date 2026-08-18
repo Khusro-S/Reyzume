@@ -128,6 +128,8 @@ export interface ReyzumeState {
   isLoading: boolean;
   isDirty: boolean;
   isSaving: boolean;
+  /** Last finished autosave: idle until one completes, then ok or error. */
+  lastSaveStatus: "idle" | "ok" | "error";
 }
 
 export interface ReyzumeActions {
@@ -138,6 +140,7 @@ export interface ReyzumeActions {
   setIsLoading: (loading: boolean) => void;
   markClean: () => void;
   setIsSaving: (saving: boolean) => void;
+  setLastSaveStatus: (status: ReyzumeState["lastSaveStatus"]) => void;
 
   // Section CRUD
   addSection: (type: SectionType) => void;

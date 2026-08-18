@@ -22,11 +22,13 @@ export const useReyzumeStore = create<ReyzumeStore>()(
         isLoading: true,
         isDirty: false,
         isSaving: false,
+        lastSaveStatus: "idle" as const,
 
         // Actions
         setCurrentReyzumeId: (id) => set({ currentReyzumeId: id }),
         setIsLoading: (loading) => set({ isLoading: loading }),
         setIsSaving: (saving) => set({ isSaving: saving }),
+        setLastSaveStatus: (status) => set({ lastSaveStatus: status }),
         markClean: () => set({ isDirty: false }),
 
         loadSections: (content) => {

@@ -7,8 +7,6 @@ import {
   useState,
   useEffect,
   useRef,
-  forwardRef,
-  useImperativeHandle,
 } from "react";
 import {
   DndContext,
@@ -34,7 +32,7 @@ import {
 } from "@dnd-kit/sortable";
 import { SectionBlock } from "./SectionBlock";
 import { HiddenSectionsPanel } from "./sections/HiddenSectionsPanel";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import { useReyzumeSync } from "@/hooks/useReyzumeSync";
 import { Loader2, AlertTriangle } from "lucide-react";
@@ -57,16 +55,11 @@ const A4_HEIGHT_MM = 297;
 const A4_WIDTH_MM = 210;
 const MM_TO_PX = 3.7795275591;
 
-export interface ReyzumeBuilderHandle {
-  getContainerRef: () => HTMLDivElement | null;
-  getMargins: () => { vertical: number; horizontal: number };
-}
-
-const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
+export default function ReyzumeBuilder() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const reyzumeId = params.reyzumeId as Id<"reyzumes">;
-
-  // Remove isMounted state and effect; check for document in render instead
+  // Print iframe (?print=true) must layout at 100% — zoom would shrink measured height.
 
   const { isLoading } = useReyzumeSync(reyzumeId);
   const { getZoom } = useZoomStore();
@@ -74,7 +67,6 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
 
   const reyzume = useQuery(api.reyzumes.getReyzumeById, { id: reyzumeId });
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [pageCount, setPageCount] = useState(1);
@@ -82,7 +74,8 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
 
   const zoom = getZoom(reyzumeId);
-  const scale = zoom / 100;
+  const isPrintMode = searchParams.get("print") === "true";
+  const scale = isPrintMode ? 1 : zoom / 100;
 
   const fontFamily = getFontByValue(reyzume?.fontFamily).value;
   const fontSize = getFontSizeByValue(reyzume?.fontSize).value;
@@ -103,14 +96,6 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
     fontFamily,
     fontSize,
   };
-
-  useImperativeHandle(ref, () => ({
-    getContainerRef: () => containerRef.current,
-    getMargins: () => ({
-      vertical: marginVertical,
-      horizontal: marginHorizontal,
-    }),
-  }));
 
   useEffect(() => {
     const node = contentRef.current;
@@ -201,16 +186,24 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
 
         <div
           className="transition-all duration-200"
-          style={{ height: `calc(${pageCount * A4_HEIGHT_MM}mm * ${scale})` }}
+          style={
+            isPrintMode
+              ? undefined
+              : { height: `calc(${pageCount * A4_HEIGHT_MM}mm * ${scale})` }
+          }
         >
           <div
-            ref={containerRef}
             data-pdf-container
             className="relative origin-top rounded-xl bg-white shadow-lg print:shadow-none"
             style={{
               width: `${A4_WIDTH_MM}mm`,
-              minHeight: `${pageCount * A4_HEIGHT_MM}mm`, // Add minimum height
-              maxWidth: "92vw",
+              // Screen: pad to full pages for page guides. Print: height must
+              // follow real content — full-page minHeight + Safari margins
+              // creates a trailing blank page.
+              ...(isPrintMode
+                ? { minHeight: "auto" as const }
+                : { minHeight: `${pageCount * A4_HEIGHT_MM}mm` }),
+              maxWidth: isPrintMode ? "none" : "92vw",
               transform: `scale(${scale})`,
               fontFamily,
               fontSize,
@@ -315,7 +308,4 @@ const ReyzumeBuilder = forwardRef<ReyzumeBuilderHandle>((_, ref) => {
       </div>
     </OverlayStyleProvider>
   );
-});
-
-ReyzumeBuilder.displayName = "ReyzumeBuilder";
-export default ReyzumeBuilder;
+}

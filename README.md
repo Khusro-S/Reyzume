@@ -108,7 +108,7 @@ UI Components ←→ Editor Engine ←→ Auto-saving ←→ Realtime Resume Upd
 
 7. **Authentication & Authorization**: We use **`Clerk`** for secure user authentication with social login support (Google, GitHub). **`Convex`** enforces row-level security (RLS) by checking the authenticated user's identity before returning data, ensuring users can only access their own resumes.
 
-8. PDF Generation: We use `react-to-print` to leverage the browser's native rendering engine. This ensures that the PDF output matches the screen pixel-perfectly, including fonts and spacing.
+8. PDF Generation: Export loads a print-mode page in a hidden iframe (`?print=true`) and opens the browser’s native Print dialog. That keeps selectable text and clickable links without maintaining a second PDF-specific layout.
 
 ---
 
@@ -190,7 +190,7 @@ Since it doesn’t break core functionality, it was deprioritized due to the ELO
 
 ### **2. PDF Export Method (Print Dialog)**
 
-The current PDF export uses **react-to-print**, relying on the browser’s native “Print to PDF” dialog.  
+PDF export loads `/reyzumes/:id?print=true` in a hidden iframe (`lib/printReyzume.ts`), waits for layout readiness, then opens the browser’s native “Print to PDF” dialog.  
 This approach was chosen because:
 
 - Libraries like `html2pdf.js` + `html2canvas-pro` generated **rasterized PDFs** (non-selectable text, non-clickable links).  
